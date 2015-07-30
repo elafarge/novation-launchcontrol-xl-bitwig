@@ -148,9 +148,6 @@ SoftTakeoverBoard.prototype.updateLed = function(path){
         color_code_weak = color_code;
     } else if(this.getState(path) == SoftTakeoverBoard.TAKING_OVER) {
         color_code = color_bits + 8;
-        // We don't need Takeover on buttons
-        if(["buttons", "action"].indexOf(path[0]) == -1)
-            this.updateTakeoverLeds(path);
     } else {
         // Full brightness...
         color_code = color_bits + 12;
@@ -160,7 +157,6 @@ SoftTakeoverBoard.prototype.updateLed = function(path){
             if(this.getSoftValue(path) < 64)
                 color_code = this.getWeakColorBits(path) + 12;
         }
-        this.updateTakeoverLeds(path);
     }
 
     // Faders don't have leds, give it up (we still have the takeover leds to help
@@ -177,16 +173,52 @@ SoftTakeoverBoard.prototype.updateLed = function(path){
 };
 
 SoftTakeoverBoard.prototype.updateTakeoverLeds = function(path){
+    if(this.getState(path) != SoftTakeoverBoard.TAKING_OVER){
+        this.goodNightNav(["up", "down", "left", "right"]);
+        return;
+    }
+
     diff = this.getDiff(path);
 
     if(path[0] == "faders"){
-        //
+        if(diff > 0){
+            this.sendBlinker("down");
+            this.goodNightNav(["up"]);
+        } else {
+            this.sendBlinker("up");
+            this.goodNightNav(["down"]);
+        }
+        this.goodNightNav(["left", "right"]);
     } else { // i.e. knobs
         if(diff > 0){
-            //this.sendBlinker("right",
+            this.sendBlinker("left");
+            this.goodNightNav(["right"]);
+        } else {
+            this.sendBlinker("right");
+            this.goodNightNav(["left"]);
         }
+        this.goodNightNav(["up", "down"]);
     }
-}
+};
+
+SoftTakeoverBoard.prototype.sendBlinker = function(nav_direction){
+    var led_index = Board.getLedIndex(["nav", nav_direction]);
+    this.controller.sendSysEx("f0 00 20 29 02 11 78 " +
+                              intToHex(this.channel) + " " +
+                              intToHex(led_index) + " " +
+                              intToHex(59) + " F7");
+};
+
+SoftTakeoverBoard.prototype.goodNightNav = function(nav_directions){
+    for(var i = 0; i < nav_directions.length; i++){
+    var led_index = Board.getLedIndex(["nav", nav_directions[i]]);
+    this.controller.sendSysEx("f0 00 20 29 02 11 78 " +
+                              intToHex(this.channel) + " " +
+                              intToHex(led_index) + " " +
+                              intToHex(0) + " F7");
+    }
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////                   Event handling                   ///////////////
@@ -234,6 +266,9 @@ SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
     }
 
     SoftTakeoverBoard.setControlValue(path, data2);
+
+    if(["nav", "buttons", "action"].indexOf(path[0]) == -1)
+        this.updateTakeoverLeds(path);
 };
 
 // Assumption that you have to respect in the callback calling this one
@@ -265,6 +300,9 @@ SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
             this.setDiff(path, SoftTakeoverBoard.getControlValue(path) - value);
             break;
     }
+
+    if(["nav", "buttons", "action"].indexOf(path[0]) == -1)
+        this.updateTakeoverLeds(path);
 }
 
 SoftTakeoverBoard.prototype.enable = function(){
