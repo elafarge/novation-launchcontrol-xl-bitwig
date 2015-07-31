@@ -34,3 +34,9 @@ function log_midi(status, data1, data2){
     if(LOG_LEVEL <= INFO)
         printMidi(status, data1, data2);
 }
+
+function makeIndexedFunction(index, f){
+    return function(value){
+        f(index, value);
+    };
+}

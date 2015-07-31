@@ -16,16 +16,19 @@ Controller = function(bw_host){
     // have to create it here once and for all for the 8 user channels
     this.user_control_count = Board.CONTROL_COUNT*8;
     this.bitwig_user_controls = this.host.createUserControls(this.user_control_count);
+    this.track_bank = this.host.createTrackBank(8, 0, 0);
 
     var channel_offset = 0;
     for(var i=0; i<8; i++){
-        this.boards.push(new UserBoard(this, i, channel_offset, false));
+        this.boards.push(new UserBoard(this, i, channel_offset));
         channel_offset += Board.CONTROL_COUNT;
     }
 
+    this.boards.push(new MixerBoard(this, i));
+
     // Select the first template to match with the above
-    this.enableBoard(0);
-    this.sendSysEx("F0 00 20 29 02 11 77 00 F7");
+    this.enableBoard(8);
+    this.sendSysEx("F0 00 20 29 02 11 77 08 F7");
 };
 
 Controller.prototype.onMidi = function(status, data1, data2){

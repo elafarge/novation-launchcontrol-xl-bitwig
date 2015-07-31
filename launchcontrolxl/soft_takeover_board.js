@@ -107,7 +107,7 @@ SoftTakeoverBoard.COLOR_SPLIT_BY_DIFF = [0.35, 0.80];
 
 SoftTakeoverBoard.prototype.getWeakColorBits = function(path){
     if(path[0] == "action") {
-           return 8;
+        return 8;
     } else {
         switch(path[2] % 4){
             case 0: return 16;
@@ -120,7 +120,7 @@ SoftTakeoverBoard.prototype.getWeakColorBits = function(path){
 
 SoftTakeoverBoard.prototype.getColorBits = function(path){
     if(path[0] == "action") {
-           return 48;
+        return 48;
     } else if (path[0] == "faders"){
         return (path[1] % 4) + (3 - path[1] % 4)*16;
     } else {
@@ -158,7 +158,6 @@ SoftTakeoverBoard.prototype.updateLed = function(path){
                 color_code = this.getWeakColorBits(path) + 12;
         }
     }
-
     // Faders don't have leds, give it up (we still have the takeover leds to help
     // us catch up)
     if(path[0] == "faders")
@@ -240,6 +239,10 @@ SoftTakeoverBoard.prototype.isAssigned = function(path){
 // Let's update the appropriate led when a led controller is tweaked
 // What happens to button leds is left to the underlying implementation
 SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
+    // Paranoia check, but in case...
+    if(status % 16 != this.channel)
+        throw "Warning: messages from channel " + status % 16 +
+              " also get sent to channel " + this.channel + "!"
     var path = Board.getControlPath(status, data1);
 
     switch(this.getState(path)){
@@ -277,10 +280,10 @@ SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
     if(value == "undefined")
         this.setState(path, SoftTakeoverBoard.UNASSIGNED);
 
+    var new_diff = SoftTakeoverBoard.getControlValue(path) - value;
     switch(this.getState(path)){
         case SoftTakeoverBoard.TAKING_OVER:
             var diff = this.getDiff(path);
-            var new_diff = SoftTakeoverBoard.getControlValue(path) - value;
             if(diff * new_diff  <= 0){
                 this.setState(path, SoftTakeoverBoard.IN_CONTROL);
                 new_diff = 0;
@@ -297,7 +300,7 @@ SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
         case SoftTakeoverBoard.MOVIN_CONTROL:
             if(SoftTakeoverBoard.getControlValue(path) == value)
                 this.setState(path, SoftTakeoverBoard.IN_CONTROL);
-            this.setDiff(path, SoftTakeoverBoard.getControlValue(path) - value);
+            this.setDiff(path, new_diff);
             break;
     }
 
@@ -346,7 +349,8 @@ SoftTakeoverBoard.prototype.resetControlState = function(path){
                         SoftTakeoverBoard.TAKING_OVER);
             }
         // We have to send led information even if the state didn't change
-        this.updateLed(path);
+        if(path[0] != "nav")
+            this.updateLed(path);
     }
 }
 

@@ -15,6 +15,7 @@ load('launchcontrolxl/controller.js');
 load('launchcontrolxl/board.js');
 load('launchcontrolxl/soft_takeover_board.js');
 load('launchcontrolxl/user_board.js');
+load('launchcontrolxl/mixer_board.js');
 
 if(host.platformIsLinux())
     host.addDeviceNameBasedDiscoveryPair(["Launch Control XL MIDI 1"], ["Launch Control XL MIDI 1"]);

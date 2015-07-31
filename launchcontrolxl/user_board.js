@@ -137,12 +137,6 @@ UserBoard.prototype = new SoftTakeoverBoard();
 ////////////////////////////////////////////////////////////////////////////////
 
 UserBoard.prototype.onMidi = function(status, data1, data2){
-
-    // Paranoia check, but in case...
-    if(status % 16 != this.channel)
-        throw "Warning: messages from channel " + status % 16 +
-              " also get sent to channel " + this.channel + "!"
-
     // And let's update the "hasControl" (in case we caught up)
     SoftTakeoverBoard.prototype.onMidi.call(this, status, data1, data2);
 
@@ -188,7 +182,7 @@ UserBoard.prototype.getValueChangedCallback = function(path){
         board_instance.setSoftValue(path, value);
         SoftTakeoverBoard.prototype.valueChangedCallback.call(board_instance, path, value);
     };
-}
+};
 
 UserBoard.prototype.getValueDisplayChangedCallback = function(path){
     var board_instance = this;
@@ -200,7 +194,7 @@ UserBoard.prototype.getValueDisplayChangedCallback = function(path){
             board_instance.setState(path, SoftTakeoverBoard.MOVIN_CONTROL);
         }
     };
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 ////// Getters, setters and utilities (play no role in the event stream) ///////
@@ -215,7 +209,7 @@ UserBoard.prototype.getSoftValue = function(path){
     else
         throw "Incorrect path length, must be one or two";
     return (value == -1) ? "unassigned" : value;
-}
+};
 
 UserBoard.prototype.setSoftValue = function(path, value){
     if(path.length == 3)
@@ -224,7 +218,7 @@ UserBoard.prototype.setSoftValue = function(path, value){
         this.control_values[path[0]][path[1]] = value;
     else
         throw "Incorrect path length, must be one or two";
-}
+};
 
 UserBoard.prototype.getControlNumber = function(path){
     if(path.length == 3)
@@ -233,7 +227,7 @@ UserBoard.prototype.getControlNumber = function(path){
         return this.bitwigControlNumber(this.layout[path[0]][path[1]]);
     else
         throw "Incorrect path length, must be one or two";
-}
+};
 
 UserBoard.prototype.bitwigControlNumber = function(i){
     return i + this.channel_offset;
@@ -258,7 +252,7 @@ UserBoard.prototype.assignNumbersToControls = function(){
         }
     }
     return ++k;
-}
+};
 
 UserBoard.prototype.confirmAsAssigned = function(path){
     if(path.length == 3)
@@ -268,7 +262,7 @@ UserBoard.prototype.confirmAsAssigned = function(path){
     else
         throw "Incorrect path length, must be one or two";
 
-}
+};
 
 UserBoard.prototype.isConfirmedAsAssigned = function(path){
     if(path.length == 3)
@@ -277,4 +271,4 @@ UserBoard.prototype.isConfirmedAsAssigned = function(path){
         return this.assigned[path[0]][path[1]];
     else
         throw "Incorrect path length, must be one or two";
-}
+};
