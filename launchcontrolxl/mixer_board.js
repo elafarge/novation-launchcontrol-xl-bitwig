@@ -38,14 +38,7 @@ MixerBoard = function(controller, channel){
         }
     };
 
-    this.track_offset = 0;
-
     var board = this;
-
-    this.controller.track_bank.addTrackScrollPositionObserver(function(position){
-        board.track_offset = position;
-        board.showChannelOffset();
-    }, 0);
 
     var device_mode = false;
 
@@ -56,6 +49,7 @@ MixerBoard = function(controller, channel){
     };
 
     this.track_enabled = [false, false, false, false, false, false, false, false];
+    this.track_names = ["", "", "", "", "", "", "", ""];
     this.track_color = [[8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48]];
 
     // Our nav and action control are assigned
@@ -117,6 +111,12 @@ MixerBoard = function(controller, channel){
         track.addColorObserver(makeIndexedThreeArgsFunction(i, function(j, r, g, b){
             board.track_color[j] = MixerBoard.projectedColor(r, g, b);
             board.updateLed(["buttons", 0, j]);
+        }));
+
+        track.addNameObserver(16, "undefined", makeIndexedFunction(i, function(j, name){
+            board.track_names[j] = name;
+            if(i == 8)
+                board.showChannelOffset();
         }));
     }
 
@@ -193,17 +193,23 @@ MixerBoard.prototype.enable = function(){
 ////////////////////////////////////////////////////////////////////////////////
 
 MixerBoard.projectedColor = function(r, g, b){
-    // And let the "projection" begin
-    var green = Math.floor(g*4);
-    var red = Math.floor(r*4);
+    // We are in the dark
+    var weak, strong;
+    if(g > 0.5 && r > 0.5){
+        weak = 17;
+        strong = 51;
+    } else if(g > 0.5 && r < 0.5){
+        weak = 16;
+        strong = 48;
+    } else if(g < 0.5 && r > 0.5){
+        weak = 1;
+        strong = 3;
+    } else {
+        weak = 18;
+        strong = 50;
+    }
 
-    var strong = 16 * green + red;
-    var weak = 16 * Math.floor(green/2) + Math.floor(red/2);
-
-    // TODO: Correction for zero colors
-
-    var shades = [weak, strong];
-    return shades;
+    return [weak, strong];
 };
 
 MixerBoard.prototype.getWeakColorBits = function(path){
@@ -265,9 +271,12 @@ MixerBoard.prototype.setSoftValue = function(path, value){
 };
 
 MixerBoard.prototype.showChannelOffset = function(){
-    // TODO: Show track names instead of numbers
-    this.controller.host.showPopupNotification("Mixer from channel " + (this.track_offset + 1) +
-        " to channel " + (this.track_offset + 8) );
+    var f = 0;
+    while(this.track_enabled[f])
+        f++;
+    if(f > 0)
+        this.controller.host.showPopupNotification("Mixer from channel " + this.track_names[0] +
+            " to channel " + this.track_names[f-1] );
 };
 
 MixerBoard.prototype.toggleDeviceMode = function(){
