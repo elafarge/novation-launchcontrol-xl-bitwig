@@ -55,7 +55,8 @@ MixerBoard = function(controller, channel){
         "record": [false, false, false, false, false, false, false, false]
     };
 
-    this.setMode("mute");
+    this.track_enabled = [false, false, false, false, false, false, false, false];
+    this.track_color = [[8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48]];
 
     // Our nav and action control are assigned
     for(var k in this.control_values["nav"])
@@ -75,22 +76,22 @@ MixerBoard = function(controller, channel){
         // In fact, I hate scopes and closures on second thought
         var track = this.controller.track_bank.getTrack(i);
         track.getMute().addValueObserver(makeIndexedFunction(i, function(j, yes){
+            board.button_states["mute"][j] = yes;
             if(board.mode == "mute"){
-                board.button_states["mute"][j] = yes;
                 board.setSoftValue(["buttons", 1, j], yes ? 0 : 127);
                 board.updateLed(["buttons", 1, j]);
             }
         }));
         track.getSolo().addValueObserver(makeIndexedFunction(i, function(j, yes){
+            board.button_states["solo"][j] = yes;
             if(board.mode == "solo"){
-                board.button_states["solo"][j] = yes;
                 board.setSoftValue(["buttons", 1, j], yes ? 127 : 0);
                 board.updateLed(["buttons", 1, j]);
             }
         }));
         track.getArm().addValueObserver(makeIndexedFunction(i, function(j, yes){
+            board.button_states["record"][j] = yes;
             if(board.mode == "record"){
-                board.button_states["record"][j] = yes;
                 board.setSoftValue(["buttons", 1, j], yes ? 127 : 0);
                 board.updateLed(["buttons", 1, j]);
             }
@@ -99,7 +100,27 @@ MixerBoard = function(controller, channel){
             board.setSoftValue(["faders", j], value);
             SoftTakeoverBoard.prototype.valueChangedCallback.call(board, ["faders", j], value);
         }));
+
+        // And track select feedback is setup here
+        track.addIsSelectedObserver(makeIndexedFunction(i, function(j, yes){
+            board.setSoftValue(["buttons", 0, j], yes ? 127 : 0);
+            board.updateLed(["buttons", 0, j]);
+        }));
+
+        // And let's add an exist observer to keep track of the unexisting tracks
+        track.exists().addValueObserver(makeIndexedFunction(i, function(j, yes){
+            board.track_enabled[j] = yes;
+            board.updateLed(["buttons", 0, j]);
+            board.updateLed(["buttons", 1, j]);
+        }));
+
+        track.addColorObserver(makeIndexedThreeArgsFunction(i, function(j, r, g, b){
+            board.track_color[j] = MixerBoard.projectedColor(r, g, b);
+            board.updateLed(["buttons", 0, j]);
+        }));
     }
+
+    this.setMode("mute");
 };
 
 MixerBoard.prototype = new SoftTakeoverBoard();
@@ -147,6 +168,10 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
         control.toggle();
     }
 
+    if(path[0] == "buttons" && path[1] == 0 && Math.floor(status/16) != 8){
+        this.controller.track_bank.getTrack(path[2]).select();
+    }
+
     // And let's update the "hasControl" (in case we caught up)
     SoftTakeoverBoard.prototype.onMidi.call(this, status, data1, data2);
 
@@ -167,13 +192,27 @@ MixerBoard.prototype.enable = function(){
 /////////////             Led color and manipulations            ///////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+MixerBoard.projectedColor = function(r, g, b){
+    // And let the "projection" begin
+    var green = Math.floor(g*4);
+    var red = Math.floor(r*4);
+
+    var strong = 16 * green + red;
+    var weak = 16 * Math.floor(green/2) + Math.floor(red/2);
+
+    // TODO: Correction for zero colors
+
+    var shades = [weak, strong];
+    return shades;
+};
+
 MixerBoard.prototype.getWeakColorBits = function(path){
     if(path[0] == "action")
         return 8;
-    else if(path[0] == "knobs")
+    else if(path[0] == "knobs" || (path[0] == "buttons" && !this.track_enabled[path[2]]))
         return 0;
     else if(path[0] == "buttons" && path[1] == 0)
-        return 16;
+        return this.track_color[path[2]][0];
     else if(path[0] == "buttons" && path[1] == 1){
         switch(this.mode){
             case "mute": return 17;
@@ -188,10 +227,10 @@ MixerBoard.prototype.getWeakColorBits = function(path){
 MixerBoard.prototype.getColorBits = function(path){
     if(path[0] == "action")
         return 48;
-    else if(path[0] == "knobs")
+    else if(path[0] == "knobs" || (path[0] == "buttons" && !this.track_enabled[path[2]]))
         return 0;
     else if(path[0] == "buttons" && path[1] == 0)
-        return 48;
+        return this.track_color[path[2]][1];
     else if(path[0] == "buttons" && path[1] == 1){
         switch(this.mode){
             case "mute": return 51;
@@ -201,15 +240,6 @@ MixerBoard.prototype.getColorBits = function(path){
     }
     else
         return SoftTakeoverBoard.prototype.getColorBits.call(this, path);
-};
-
-MixerBoard.prototype.updateEnabledTracks = function(){
-    for(var i=0; i < this.track_count; i++){
-        this.setState(["buttons", 0, i], SoftTakeoverBoard.IN_CONTROL);
-        this.setState(["buttons", 1, i], SoftTakeoverBoard.IN_CONTROL);
-        this.updateLed(["buttons", 0, i]);
-        this.updateLed(["buttons", 1, i]);
-    }
 };
 
 ////////////////////////////////////////////////////////////////////////////////

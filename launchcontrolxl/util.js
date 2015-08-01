@@ -40,3 +40,9 @@ function makeIndexedFunction(index, f){
         f(index, value);
     };
 }
+
+function makeIndexedThreeArgsFunction(index, f){
+    return function(x, y, z){
+        f(index, x, y, z);
+    };
+}
