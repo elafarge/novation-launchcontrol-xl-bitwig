@@ -8,6 +8,10 @@
  */
 
 MixerBoard = function(controller, channel){
+    // For inheritance with new
+    if(typeof(controller) == "undefined")
+        return;
+
     log_info("Creating MixerBoard on channel " + channel);
     SoftTakeoverBoard.call(this, controller, channel);
 
@@ -279,22 +283,16 @@ MixerBoard.prototype.showChannelOffset = function(){
             " to channel " + this.track_names[f-1] );
 };
 
-MixerBoard.prototype.toggleDeviceMode = function(){
-    this.device_mode = !this.device_mode;
-    if(device_mode)
-        this.enableDeviceMode();
-    else
-        this.enableMixerMode();
-};
-
 MixerBoard.prototype.enableDeviceMode = function(){
     this.setSoftValue(["action", "device"], 127);
-    this.updateLed(["action", "device"]);
+    this.device_mode = true;
+    this.resetAllControlsState();
 };
 
 MixerBoard.prototype.enableMixerMode = function(){
     this.setSoftValue(["action", "device"], 0);
-    this.updateLed(["action", "device"]);
+    this.device_mode = false;
+    this.resetAllControlsState();
 };
 
 MixerBoard.prototype.setMode = function(mode){

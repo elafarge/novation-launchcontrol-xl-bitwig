@@ -312,6 +312,13 @@ SoftTakeoverBoard.prototype.enable = function(){
     // Let's reset the LEDs for this template
     this.controller.sendMidi(11*16 + this.channel, 0, 0);
 
+    this.resetAllControlsState();
+
+    // Let's enable flashing for this channel
+    this.controller.sendMidi(176 + this.channel, 0, 40);
+};
+
+SoftTakeoverBoard.prototype.resetAllControlsState = function(){
     // Let's update all the leds
     for(var i=0; i<3; i++)
         for(var j=0; j<8; j++)
@@ -329,10 +336,7 @@ SoftTakeoverBoard.prototype.enable = function(){
 
     for(key in this.diff['action'])
         this.resetControlState(["action", key]);
-
-    // Let's enable flashing for this channel
-    this.controller.sendMidi(176 + this.channel, 0, 40);
-};
+}
 
 SoftTakeoverBoard.prototype.resetControlState = function(path){
     var soft_value = this.getSoftValue(path);

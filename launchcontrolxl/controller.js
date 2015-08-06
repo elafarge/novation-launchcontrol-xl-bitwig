@@ -24,7 +24,7 @@ Controller = function(bw_host){
         channel_offset += Board.CONTROL_COUNT;
     }
 
-    this.boards.push(new MixerBoard(this, i));
+    this.boards.push(new DeviceBoard(this, 8));
 
     // Select the first template to match with the above
     this.enableBoard(8);
