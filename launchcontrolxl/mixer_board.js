@@ -110,11 +110,17 @@ MixerBoard = function(controller, channel){
             board.track_enabled[j] = yes;
             board.updateLed(["buttons", 0, j]);
             board.updateLed(["buttons", 1, j]);
+            board.updateLed(["knobs", 0, j]);
+            board.updateLed(["knobs", 1, j]);
+            board.updateLed(["knobs", 2, j]);
         }));
 
         track.addColorObserver(makeIndexedThreeArgsFunction(i, function(j, r, g, b){
             board.track_color[j] = MixerBoard.projectedColor(r, g, b);
             board.updateLed(["buttons", 0, j]);
+            board.updateLed(["knobs", 0, j]);
+            board.updateLed(["knobs", 1, j]);
+            board.updateLed(["knobs", 2, j]);
         }));
 
         track.addNameObserver(16, "undefined", makeIndexedFunction(i, function(j, name){
@@ -181,7 +187,8 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
 
     if(this.hasControl(path)){
         if(path[0] == "faders"){
-            var target_track = this.controller.track_bank.getTrack(path[1]).getVolume().set(data2, 128);
+            var target_track = this.controller.track_bank.getTrack(path[1]).getVolume().
+                set(data2, 128);
             this.setSoftValue(path, data2);
         }
     }

@@ -46,3 +46,9 @@ function makeIndexedThreeArgsFunction(index, f){
         f(index, x, y, z);
     };
 }
+
+function makeDoubleIndexedFunction(i, j, f){
+    return function(value){
+        f(i, j, value);
+    };
+};

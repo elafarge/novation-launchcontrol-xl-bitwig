@@ -70,26 +70,26 @@ SoftTakeoverBoard.prototype = new Board();
 // It's static since it should be persisted accross boards
 SoftTakeoverBoard.CONTROL_VALUE = {
     "knobs": [
-        [64, 64, 64, 64, 64, 64, 64, 64],
-        [64, 64, 64, 64, 64, 64, 64, 64],
-        [64, 64, 64, 64, 64, 64, 64, 64]
+        [128, 128, 128, 128, 128, 128, 128, 128],
+        [128, 128, 128, 128, 128, 128, 128, 128],
+        [128, 128, 128, 128, 128, 128, 128, 128]
     ],
-    "faders": [0, 0, 0, 0, 0, 0, 0, 0],
+    "faders": [128, 128, 128, 128, 128, 128, 128, 128],
     "buttons": [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
+        [128, 128, 128, 128, 128, 128, 128, 128],
+        [128, 128, 128, 128, 128, 128, 128, 128]
     ],
     "nav": {
-       "up": 0,
-       "down": 0,
-       "left": 0,
-       "right": 0
+       "up": 128,
+       "down": 128,
+       "left": 128,
+       "right": 128
    },
    "action": {
-      "device": 0,
-      "mute": 0,
-      "solo": 0,
-      "record": 0
+      "device": 128,
+      "mute": 128,
+      "solo": 128,
+      "record": 128
    }
 };
 
@@ -279,8 +279,8 @@ SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
 SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
     if(value == "undefined")
         this.setState(path, SoftTakeoverBoard.UNASSIGNED);
-
     var new_diff = SoftTakeoverBoard.getControlValue(path) - value;
+
     switch(this.getState(path)){
         case SoftTakeoverBoard.TAKING_OVER:
             var diff = this.getDiff(path);
@@ -306,7 +306,7 @@ SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
 
     if(["nav", "buttons", "action"].indexOf(path[0]) == -1)
         this.updateTakeoverLeds(path);
-}
+};
 
 SoftTakeoverBoard.prototype.enable = function(){
     // Let's reset the LEDs for this template
@@ -336,7 +336,7 @@ SoftTakeoverBoard.prototype.resetAllControlsState = function(){
 
     for(key in this.diff['action'])
         this.resetControlState(["action", key]);
-}
+};
 
 SoftTakeoverBoard.prototype.resetControlState = function(path){
     var soft_value = this.getSoftValue(path);
@@ -352,11 +352,11 @@ SoftTakeoverBoard.prototype.resetControlState = function(path){
                 this.setState(path, (diff == 0) ? SoftTakeoverBoard.IN_CONTROL :
                         SoftTakeoverBoard.TAKING_OVER);
             }
-        // We have to send led information even if the state didn't change
-        if(path[0] != "nav")
-            this.updateLed(path);
     }
-}
+    // We have to send led information even if the state didn't change
+    if(path[0] != "nav")
+        this.updateLed(path);
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 ////// Getters, setters and utilities (play no role in the event stream) ///////
@@ -421,7 +421,7 @@ SoftTakeoverBoard.prototype.setState = function(path, state){
     if(path[0] != "nav" && (old_state != state ||
            ["action", "buttons"].indexOf(path[0]) > -1))
         this.updateLed(path);
-}
+};
 
 /**
  * The implementations are dummy, child classes should always implement these

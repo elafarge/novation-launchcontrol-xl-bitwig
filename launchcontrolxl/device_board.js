@@ -27,13 +27,14 @@ DeviceBoard.prototype.onMidi = function(status, data1, data2){
     if(!this.device_mode)
         MixerBoard.prototype.onMidi.call(this, status, data1, data2);
     else {
-        path = Board.getControlPath(status, data1);
+        var path = Board.getControlPath(status, data1);
 
         if(path[0] == "action" && path[1] == "device" && Math.floor(status/16) != 8)
             return this.enableMixerMode();
 
-        // Tweak the right control
         SoftTakeoverBoard.prototype.onMidi.call(this, status, data1, data2);
+
+        // Tweak the right control
     }
 };
 
@@ -52,11 +53,11 @@ DeviceBoard.prototype.getWeakColorBits = function(path){
 
 };
 
-DeviceBoard.prototype.getSoftvalue = function(path){
+DeviceBoard.prototype.getSoftValue = function(path){
     if(!this.device_mode)
         return MixerBoard.prototype.getSoftValue.call(this, path);
 
-    return 63;
+    return -1;
 };
 
 DeviceBoard.prototype.setSoftValue = function(path, value){
