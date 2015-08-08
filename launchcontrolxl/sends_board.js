@@ -60,15 +60,15 @@ SendsBoard.prototype.onMidi = function(status, data1, data2){
     if(path[0] != "knobs" || this.device_mode)
         return DeviceBoard.prototype.onMidi.call(this, status, data1, data2);
 
-     SoftTakeoverBoard.prototype.onMidi.call(this, status, data1, data2);
+    SoftTakeoverBoard.prototype.onMidi.call(this, status, data1, data2);
 
-     if(this.hasControl(path)){
-         if(path[1] == 2)
-             this.controller.track_bank.getTrack(path[2]).getPan().set(data2, 128);
-         else
-             this.controller.track_bank.getTrack(path[2]).getSend(1-path[1]).set(data2, 128);
-         this.setSoftValue(path, data2);
-     }
+    if(this.hasControl(path)){
+        if(path[1] == 2)
+            this.controller.track_bank.getTrack(path[2]).getPan().set(data2, 128);
+        else
+            this.controller.track_bank.getTrack(path[2]).getSend(1-path[1]).set(data2, 128);
+        this.setSoftValue(path, data2);
+    }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -134,6 +134,7 @@ SendsBoard.prototype.disableAssignmentVisualFeedback = function(horizontal){
         this.controller.track_bank.getTrack(i).getSend(1).setIndication(false);
     }
 };
+
 SendsBoard.prototype.getBoardName = function(){
     return "Pan/FX";
 };

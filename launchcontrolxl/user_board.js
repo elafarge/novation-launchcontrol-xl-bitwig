@@ -91,7 +91,7 @@ UserBoard = function(controller, channel, channel_offset){
     };
 
     // Since the number of controls can vary we have a function to make sure
-    // every number in [[0, n]] gets a controller assigned (where n is the
+    // every number in [[0, n]] gets a control assigned (where n is the
     // number of controls).
     this.control_count = this.assignNumbersToControls();
 
@@ -192,6 +192,8 @@ UserBoard.prototype.getValueDisplayChangedCallback = function(path){
         else if(!board_instance.isConfirmedAsAssigned(path)){
             board_instance.confirmAsAssigned(path);
             board_instance.setState(path, SoftTakeoverBoard.MOVIN_CONTROL);
+            board_instance.controller.bitwig_user_controls.getControl(board_instance.
+                getControlNumber(path)).setIndication(true);
         }
     };
 };
@@ -213,15 +215,16 @@ UserBoard.prototype.enable = function(){
 };
 
 UserBoard.prototype.disable = function(){
-    Board.prototype.disable.call(this);
+    SoftTakeoverBoard.prototype.disable.call(this);
 
     // Let's put an indicator on every assigned fader and knob
     for(var i=0; i<8; i++){
         this.controller.bitwig_user_controls.getControl(this.getControlNumber(['faders', i])).
             setIndication(false);
-        for(var j=0; j<3; j++)
+        for(var j=0; j<3; j++){
             this.controller.bitwig_user_controls.getControl(
                 this.getControlNumber(['knobs', j, i])).setIndication(false);
+        }
     }
 };
 

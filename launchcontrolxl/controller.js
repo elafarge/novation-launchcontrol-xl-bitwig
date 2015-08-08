@@ -14,7 +14,7 @@ Controller = function(bw_host){
 
     // Unfortunately we can have only one control section per controller so we
     // have to create it here once and for all for the 8 user channels
-    this.user_control_count = Board.CONTROL_COUNT*8;
+    this.user_control_count = Board.CONTROL_COUNT*8 + 2*LiveBoard.USER_CONTROL_COUNT;
     this.bitwig_user_controls = this.host.createUserControls(this.user_control_count);
     this.track_bank = this.host.createMainTrackBank(8, 2, 0);
 
@@ -26,10 +26,14 @@ Controller = function(bw_host){
 
     this.boards.push(new MacroBoard(this, 8));
     this.boards.push(new SendsBoard(this, 9));
+    this.boards.push(new LiveBoard(this, 10, channel_offset));
+    channel_offset += LiveBoard.USER_CONTROL_COUNT;
+    this.boards.push(new LiveBoard(this, 11, channel_offset));
+    channel_offset += LiveBoard.USER_CONTROL_COUNT;
 
     // Select the first template to match with the above
-    this.enableBoard(9);
-    this.sendSysEx("F0 00 20 29 02 11 77 09 F7");
+    this.enableBoard(11);
+    this.sendSysEx("F0 00 20 29 02 11 77 0b F7");
 };
 
 Controller.prototype.onMidi = function(status, data1, data2){
@@ -77,7 +81,7 @@ Controller.prototype.enableBoard = function(i){
         throw "Error in enableBoard(" + i + "): Invalid board number. There " +
             "is only " + this.boards.length + " boards available."
 
-    if(this.current_board_number > 0)
+    if(this.current_board_number >= 0)
         this.currentBoard().disable();
 
     this.boards[i].enable();

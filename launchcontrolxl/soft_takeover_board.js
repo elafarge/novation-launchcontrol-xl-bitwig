@@ -133,7 +133,6 @@ SoftTakeoverBoard.prototype.getColorBits = function(path){
     }
 };
 
-
 SoftTakeoverBoard.prototype.updateLed = function(path){
 
     // We don't want to use the nav leds for other things than diff indications
