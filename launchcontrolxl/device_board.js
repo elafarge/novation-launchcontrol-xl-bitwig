@@ -53,6 +53,16 @@ DeviceBoard.prototype.getWeakColorBits = function(path){
 
 };
 
+DeviceBoard.prototype.enableAssignmentVisualFeedback = function(){
+    if(!this.device_mode)
+        return MixerBoard.prototype.enableAssignmentVisualFeedback.call(this);
+};
+
+DeviceBoard.prototype.disableAssignmentVisualFeedback = function(){
+    if(!this.device_mode)
+        return MixerBoard.prototype.disableAssignmentVisualFeedback.call(this);
+};
+
 DeviceBoard.prototype.getSoftValue = function(path){
     if(!this.device_mode)
         return MixerBoard.prototype.getSoftValue.call(this, path);

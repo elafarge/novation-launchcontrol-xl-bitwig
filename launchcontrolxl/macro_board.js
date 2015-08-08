@@ -9,10 +9,6 @@
  */
 
 MacroBoard = function(controller, channel){
-    // For inheritance with new
-    if(typeof(controller) == "undefined")
-        return;
-
     log_info("Creating a macro board on channel " + channel);
 
     this.macro_offset = 0;
@@ -61,10 +57,15 @@ MacroBoard.prototype.onMidi = function(status, data1, data2){
 
     if(path[0] == "nav" && ["up", "down"].indexOf(path[1]) > -1 && !this.device_mode &&
        data2 == 127){
-        if(path[1] == "down" && this.macro_offset < 5)
+        if(path[1] == "down" && this.macro_offset < 5){
+            this.disableAssignmentVisualFeedback(false);
             this.macro_offset++;
-        else if(path[1] == "up" && this.macro_offset > 0)
+            this.enableAssignmentVisualFeedback(false);
+        } else if(path[1] == "up" && this.macro_offset > 0) {
+            this.disableAssignmentVisualFeedback(false);
             this.macro_offset--;
+            this.enableAssignmentVisualFeedback(false);
+        }
 
         this.resetKnobsState();
     }
@@ -121,4 +122,42 @@ MacroBoard.prototype.getSoftValue = function(path){
         return DeviceBoard.prototype.getSoftValue.call(this, path);
 
     return this.macro_values[this.macro_offset + 2 - path[1]][path[2]];
+};
+
+MacroBoard.prototype.enableAssignmentVisualFeedback = function(horizontal){
+    if(this.device_mode)
+        return DeviceBoard.prototype.enableAssignmentVisualFeedback.call(this);
+
+    if(typeof horizontal == "undefined")
+        horizontal = true;
+
+    if(horizontal)
+        DeviceBoard.prototype.enableAssignmentVisualFeedback.call(this);
+
+    for(var i=0; i<8; i++){
+        for(var j=this.macro_offset; j<this.macro_offset + 3; j++)
+            this.controller.track_bank.getTrack(i).getPrimaryDevice().getMacro(j).getAmount().
+                setIndication(true);
+    }
+};
+
+MacroBoard.prototype.disableAssignmentVisualFeedback = function(horizontal){
+    if(this.device_mode)
+        return DeviceBoard.prototype.disableAssignmentVisualFeedback.call(this);
+
+    if(typeof horizontal == "undefined")
+        horizontal = true;
+
+    if(horizontal)
+        DeviceBoard.prototype.disableAssignmentVisualFeedback.call(this);
+
+    for(var i=0; i<8; i++){
+        for(var j=this.macro_offset; j<this.macro_offset + 3; j++)
+            this.controller.track_bank.getTrack(i).getPrimaryDevice().getMacro(j).getAmount().
+                setIndication(false);
+    }
+};
+
+MacroBoard.prototype.getBoardName = function(){
+    return "Macro ";
 };

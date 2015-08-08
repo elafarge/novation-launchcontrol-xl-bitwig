@@ -196,6 +196,35 @@ UserBoard.prototype.getValueDisplayChangedCallback = function(path){
     };
 };
 
+UserBoard.prototype.enable = function(){
+    SoftTakeoverBoard.prototype.enable.call(this);
+
+    // Let's put an indicator on every assigned fader and knob
+    for(var i=0; i<8; i++){
+        if(this.getState(['faders', i]) != SoftTakeoverBoard.UNASSIGNED)
+            this.controller.bitwig_user_controls.getControl(this.getControlNumber(['faders', i])).
+                setIndication(true);
+        for(var j=0; j<3; j++){
+            if(this.getState(['knobs', j, i]) != SoftTakeoverBoard.UNASSIGNED)
+                this.controller.bitwig_user_controls.getControl(
+                    this.getControlNumber(['knobs', j, i])).setIndication(true);
+        }
+    }
+};
+
+UserBoard.prototype.disable = function(){
+    Board.prototype.disable.call(this);
+
+    // Let's put an indicator on every assigned fader and knob
+    for(var i=0; i<8; i++){
+        this.controller.bitwig_user_controls.getControl(this.getControlNumber(['faders', i])).
+            setIndication(false);
+        for(var j=0; j<3; j++)
+            this.controller.bitwig_user_controls.getControl(
+                this.getControlNumber(['knobs', j, i])).setIndication(false);
+    }
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 ////// Getters, setters and utilities (play no role in the event stream) ///////
 ////////////////////////////////////////////////////////////////////////////////

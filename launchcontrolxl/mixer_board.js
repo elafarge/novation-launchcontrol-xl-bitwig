@@ -53,7 +53,6 @@ MixerBoard = function(controller, channel){
     };
 
     this.track_enabled = [false, false, false, false, false, false, false, false];
-    this.track_names = ["", "", "", "", "", "", "", ""];
     this.track_color = [[8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48]];
 
     // Our nav and action control are assigned
@@ -122,14 +121,7 @@ MixerBoard = function(controller, channel){
             board.updateLed(["knobs", 1, j]);
             board.updateLed(["knobs", 2, j]);
         }));
-
-        track.addNameObserver(16, "undefined", makeIndexedFunction(i, function(j, name){
-            board.track_names[j] = name;
-            if(i == 8)
-                board.showChannelOffset();
-        }));
     }
-
     this.setMode("mute");
 };
 
@@ -146,10 +138,15 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
 
     // Let's handle the navigation
     if (path[0] == "nav" && data2 != 0){
-       if(path[1] == "left")
+       if(path[1] == "left"){
+           this.disableAssignmentVisualFeedback();
            this.controller.track_bank.scrollTracksUp();
-       else if(path[1] == "right")
+           this.enableAssignmentVisualFeedback();
+       } else if(path[1] == "right"){
+           this.disableAssignmentVisualFeedback();
            this.controller.track_bank.scrollTracksDown();
+           this.enableAssignmentVisualFeedback();
+       }
     }
 
     // Let's handle modes
@@ -196,7 +193,13 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
 
 MixerBoard.prototype.enable = function(){
     SoftTakeoverBoard.prototype.enable.call(this);
-    this.showChannelOffset();
+    this.showSelectedMode();
+    this.enableAssignmentVisualFeedback();
+};
+
+MixerBoard.prototype.disable = function(){
+    this.disableAssignmentVisualFeedback();
+    Board.prototype.disable.call(this);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -259,6 +262,16 @@ MixerBoard.prototype.getColorBits = function(path){
         return SoftTakeoverBoard.prototype.getColorBits.call(this, path);
 };
 
+MixerBoard.prototype.enableAssignmentVisualFeedback = function(){
+    for(var i=0; i<8; i++)
+        this.controller.track_bank.getTrack(i).getVolume().setIndication(true);
+};
+
+MixerBoard.prototype.disableAssignmentVisualFeedback = function(){
+    for(var i=0; i<8; i++)
+        this.controller.track_bank.getTrack(i).getVolume().setIndication(false);
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 ////// Getters, setters and utilities (play no role in the event stream) ///////
 ////////////////////////////////////////////////////////////////////////////////
@@ -281,24 +294,23 @@ MixerBoard.prototype.setSoftValue = function(path, value){
         throw "Incorrect path length, must be one or two";
 };
 
-MixerBoard.prototype.showChannelOffset = function(){
-    var f = 0;
-    while(this.track_enabled[f])
-        f++;
-    if(f > 0)
-        this.controller.host.showPopupNotification("Mixer from channel " + this.track_names[0] +
-            " to channel " + this.track_names[f-1] );
+MixerBoard.prototype.showSelectedMode = function(){
+    this.controller.host.showPopupNotification(this.getBoardName() + " mode ");
 };
 
 MixerBoard.prototype.enableDeviceMode = function(){
     this.setSoftValue(["action", "device"], 127);
+    this.disableAssignmentVisualFeedback();
     this.device_mode = true;
+    this.enableAssignmentVisualFeedback();
     this.resetAllControlsState();
 };
 
 MixerBoard.prototype.enableMixerMode = function(){
     this.setSoftValue(["action", "device"], 0);
+    this.disableAssignmentVisualFeedback();
     this.device_mode = false;
+    this.enableAssignmentVisualFeedback();
     this.resetAllControlsState();
 };
 
@@ -319,4 +331,8 @@ MixerBoard.prototype.setMode = function(mode){
             this.setSoftValue(["buttons", 1, i], this.button_states[mode][i] ? 127 : 0);
         this.updateLed(["buttons", 1, i]);
     }
+};
+
+MixerBoard.prototype.getBoardName = function(){
+    return "Mixer";
 };

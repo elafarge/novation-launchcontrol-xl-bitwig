@@ -16,7 +16,7 @@ Controller = function(bw_host){
     // have to create it here once and for all for the 8 user channels
     this.user_control_count = Board.CONTROL_COUNT*8;
     this.bitwig_user_controls = this.host.createUserControls(this.user_control_count);
-    this.track_bank = this.host.createTrackBank(8, 0, 0);
+    this.track_bank = this.host.createMainTrackBank(8, 2, 0);
 
     var channel_offset = 0;
     for(var i=0; i<8; i++){
@@ -25,10 +25,11 @@ Controller = function(bw_host){
     }
 
     this.boards.push(new MacroBoard(this, 8));
+    this.boards.push(new SendsBoard(this, 9));
 
     // Select the first template to match with the above
-    this.enableBoard(8);
-    this.sendSysEx("F0 00 20 29 02 11 77 08 F7");
+    this.enableBoard(9);
+    this.sendSysEx("F0 00 20 29 02 11 77 09 F7");
 };
 
 Controller.prototype.onMidi = function(status, data1, data2){
