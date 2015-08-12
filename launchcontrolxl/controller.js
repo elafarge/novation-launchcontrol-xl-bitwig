@@ -17,6 +17,8 @@ Controller = function(bw_host){
     this.user_control_count = Board.CONTROL_COUNT*8 + 2*LiveBoard.USER_CONTROL_COUNT;
     this.bitwig_user_controls = this.host.createUserControls(this.user_control_count);
     this.track_bank = this.host.createMainTrackBank(8, 2, 0);
+    this.application = host.createApplication();
+    this.cursor_device = host.createCursorDevice();
 
     var channel_offset = 0;
     for(var i=0; i<8; i++){

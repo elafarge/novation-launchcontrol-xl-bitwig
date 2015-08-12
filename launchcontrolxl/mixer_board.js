@@ -9,7 +9,7 @@
 
 MixerBoard = function(controller, channel){
     // For inheritance with new
-    if(typeof(controller) == "undefined")
+    if(typeof controller == "undefined")
         return;
 
     log_info("Creating MixerBoard on channel " + channel);
@@ -44,7 +44,8 @@ MixerBoard = function(controller, channel){
 
     var board = this;
 
-    var device_mode = false;
+    this.device_mode = false;
+    this.selected_track_index = 0;
 
     this.button_states = {
         "mute": [false, false, false, false, false, false, false, false],
@@ -102,6 +103,7 @@ MixerBoard = function(controller, channel){
         track.addIsSelectedObserver(makeIndexedFunction(i, function(j, yes){
             board.setSoftValue(["buttons", 0, j], yes ? 127 : 0);
             board.updateLed(["buttons", 0, j]);
+            board.selected_track_index = j;
         }));
 
         // And let's add an exist observer to keep track of the unexisting tracks
@@ -183,16 +185,15 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
     SoftTakeoverBoard.prototype.onMidi.call(this, status, data1, data2);
 
     if(this.hasControl(path)){
-        if(path[0] == "faders"){
+        if(path[0] == "faders")
             var target_track = this.controller.track_bank.getTrack(path[1]).getVolume().
                 set(data2, 128);
-            this.setSoftValue(path, data2);
-        }
     }
 };
 
 MixerBoard.prototype.enable = function(){
     SoftTakeoverBoard.prototype.enable.call(this);
+    this.device_mode = false;
     this.showSelectedMode();
     this.enableAssignmentVisualFeedback();
 };

@@ -81,11 +81,9 @@ LiveBoard.prototype.onMidi = function(status, data1, data2){
     }
 
     // Tweak the knobs
-    if(this.hasControl(path)){
+    if(this.hasControl(path))
         this.controller.bitwig_user_controls.getControl(this.getControlNumber(path)).
             set(data2, 128);
-        this.setSoftValue(path, data2);
-    }
 };
 
 LiveBoard.prototype.getValueChangedCallback = function(path){
@@ -159,9 +157,17 @@ LiveBoard.prototype.getWeakColorBits = function(path){
 };
 
 LiveBoard.prototype.getSoftValue = function(path){
-    if(path[0] == "knobs" && this.control_values["knobs"][path[1]][path[2]] == -1)
+    if(path[0] == "knobs" && this.control_values["knobs"][path[1]][path[2]] == -1 &&
+            !this.device_mode)
         return "unassigned";
     return DeviceBoard.prototype.getSoftValue.call(this, path);
+};
+
+LiveBoard.prototype.setSoftValue = function(path, value, from_device){
+    if(typeof from_device == "undefined")
+        from_device = false;
+
+    return DeviceBoard.prototype.setSoftValue.call(this, path, value, from_device);
 };
 
 LiveBoard.prototype.getControlNumber = function(path){

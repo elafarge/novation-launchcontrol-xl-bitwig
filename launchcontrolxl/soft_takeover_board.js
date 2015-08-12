@@ -7,6 +7,10 @@
  */
 
 SoftTakeoverBoard = function(controller, channel){
+    // For inheritance with new
+    if(typeof(controller) == "undefined")
+        return;
+
     Board.call(this, controller, channel);
 
     this.diff = {
@@ -274,11 +278,11 @@ SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
 };
 
 // Assumption that you have to respect in the callback calling this one
-// this.getSoftValue(path) == value !!
+// this.getSoftValue(path) == value !! TODO: remove value parameter
 SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
     if(value == "undefined")
         this.setState(path, SoftTakeoverBoard.UNASSIGNED);
-    var new_diff = SoftTakeoverBoard.getControlValue(path) - value;
+    var new_diff = SoftTakeoverBoard.getControlValue(path) - this.getSoftValue(path);
 
     switch(this.getState(path)){
         case SoftTakeoverBoard.TAKING_OVER:
@@ -291,6 +295,8 @@ SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
             break;
 
         case SoftTakeoverBoard.IN_CONTROL:
+            if(["nav", "buttons", "action"].indexOf(path[0]) > -1)
+                break;
             if(SoftTakeoverBoard.getControlValue(path) != value)
                 this.setState(path, SoftTakeoverBoard.TAKING_OVER);
             this.setDiff(path, new_diff);
@@ -345,7 +351,7 @@ SoftTakeoverBoard.prototype.resetControlState = function(path){
         var diff = SoftTakeoverBoard.getControlValue(path) - soft_value;
         if(["buttons", "nav", "action"].indexOf(path[0]) > -1){
             if(diff != 0)
-                this.setSoftValue(path, soft_value);
+                this.setState(path, SoftTakeoverBoard.IN_CONTROL);
         } else {
                 this.setDiff(path, diff);
                 this.setState(path, (diff == 0) ? SoftTakeoverBoard.IN_CONTROL :

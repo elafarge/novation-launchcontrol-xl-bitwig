@@ -67,7 +67,6 @@ SendsBoard.prototype.onMidi = function(status, data1, data2){
             this.controller.track_bank.getTrack(path[2]).getPan().set(data2, 128);
         else
             this.controller.track_bank.getTrack(path[2]).getSend(1-path[1]).set(data2, 128);
-        this.setSoftValue(path, data2);
     }
 };
 
