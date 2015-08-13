@@ -1,34 +1,44 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
     <title>Novation-launchcontrol-xl-bitwig by elafarge</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
-
   <body>
-    <header>
-      <div class="inner">
-        <h1>Novation-launchcontrol-xl-bitwig</h1>
-        <h2>A controller script to get the Novation LaunchControl XL to integrate smoothly with Bitwig Studio.</h2>
-        <a href="https://github.com/elafarge/novation-launchcontrol-xl-bitwig" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/elafarge/novation-launchcontrol-xl-bitwig">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/elafarge/novation-launchcontrol-xl-bitwig/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/elafarge/novation-launchcontrol-xl-bitwig/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <p>Welcome. This page describes how you can get your Novation LaunchControl XL device working with Bitwig Studio.</p>
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Novation-launchcontrol-xl-bitwig</h1>
+          <p>A controller script to get the Novation LaunchControl XL to integrate smoothly with Bitwig Studio.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/elafarge">elafarge</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <p>Welcome. This page describes how you can get your Novation LaunchControl XL device working with Bitwig Studio.</p>
 
 <h3>
 <a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h3>
@@ -51,7 +61,12 @@
 
 <ul>
 <li>If you have <code>git</code> installed just run <code>git clone https://github.com/elafarge/novation-launchcontrol-xl-bitwig.git</code>  under <code>~/Bitwig Studio/Controller Scripts</code>. Run <code>git push</code> when you you to update the mapping to the latest version.</li>
-<li>we also have a one-line install/update script for you here: TODO</li>
+<li>we have a one-line install/update script (you'll need to have curl installed): </li>
+</ul>
+
+<div class="highlight highlight-shell"><pre>sh -c <span class="pl-s"><span class="pl-pds">"</span><span class="pl-s"><span class="pl-pds">$(</span>curl -L https://raw.githubusercontent.com/elafarge/novation-launchcontrol-xl-bitwig/master/install.sh<span class="pl-pds">)</span></span><span class="pl-pds">"</span></span></pre></div>
+
+<ul>
 <li>or else, you can just download the archive here and extract it under <code>~/Bitwig Studio/Controller Scripts</code>
 </li>
 </ul>
@@ -61,7 +76,12 @@
 
 <ul>
 <li>If you have <code>git</code> installed just run <code>git clone https://github.com/elafarge/novation-launchcontrol-xl-bitwig.git</code>  under <code>~/Documents/Bitwig Studio/Controller Scripts</code> in your Terminal. Run <code>git push</code> when you you to update the mapping to the latest version.</li>
-<li>we also have a one-line install/update script for you here: TODO</li>
+<li>we also have a one-line install/update script for you here, just open a Terminal and paste the below line in it: </li>
+</ul>
+
+<div class="highlight highlight-shell"><pre>sh -c <span class="pl-s"><span class="pl-pds">"</span><span class="pl-s"><span class="pl-pds">$(</span>curl -L https://raw.githubusercontent.com/elafarge/novation-launchcontrol-xl-bitwig/master/install.sh<span class="pl-pds">)</span></span><span class="pl-pds">"</span></span></pre></div>
+
+<ul>
 <li>or else, you can just download the archive here and extract it under <code>~/Bitwig Studio/Controller Scripts</code>
 </li>
 </ul>
@@ -83,8 +103,12 @@
 <h4>
 <a id="user-modes" class="anchor" href="#user-modes" aria-hidden="true"><span class="octicon octicon-link"></span></a>User modes</h4>
 
+<p>TODO</p>
+
 <h4>
 <a id="factory-modes" class="anchor" href="#factory-modes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Factory Modes</h4>
+
+<p>TODO</p>
 
 <h4>
 <a id="troubleshooting" class="anchor" href="#troubleshooting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Troubleshooting</h4>
@@ -115,26 +139,11 @@ you might have to restart </li>
 <ul>
 <li>Etienne Lafarge <a href="mailto:etienne.lafarge@gmail.com">etienne.lafarge@gmail.com</a> (<a href="https://github.com/elafarge" class="user-mention">@elafarge</a>) </li>
 </ul>
-        </section>
+      </section>
 
-        <aside id="sidebar">
-          <a href="https://github.com/elafarge/novation-launchcontrol-xl-bitwig/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/elafarge/novation-launchcontrol-xl-bitwig/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/elafarge/novation-launchcontrol-xl-bitwig"></a> is maintained by <a href="https://github.com/elafarge">elafarge</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
     </div>
-
-            <script type="text/javascript">
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
