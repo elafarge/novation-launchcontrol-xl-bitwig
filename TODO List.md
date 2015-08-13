@@ -29,8 +29,8 @@ Code improvements
 * Add a cursor_track to have control over the selected device Arm would be cool, right now I
   honestly don't know why the button is magicaly updating after the arm state has changed.
 * Add comments a little bit everywhere.
-* Check the code with a code quality checker.
-* Add a CHANGLELOG.md and a CONTRIBUTING.md to the repo.
+* Add a CHANGLELOG.md, license file and a CONTRIBUTING.md to the repo.
+* Use jshint to check the quality of this code.
 
 Miscanellous
 ============

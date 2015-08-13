@@ -1,3 +1,5 @@
+/* jshint loopfunc: true */
+
 /**
  * Author: Etienne Lafarge (etienne.lafarge@gmail.com, Github: elafarge)
  * Date: 07/2015
@@ -148,7 +150,7 @@ DeviceBoard.prototype.onMidi = function(status, data1, data2){
                 return;
             } else {
                 // Navigation accross presets
-                if(path[1] == 0){
+                if(path[1] === 0){
                     switch(path[2]){
                         case 4: this.controller.cursor_device.toggleEnabledState(); break;
                         case 5: this.controller.cursor_device.switchToNextPresetCreator(); break;
@@ -182,7 +184,7 @@ DeviceBoard.prototype.onMidi = function(status, data1, data2){
             if(path[0] == "knobs"){
                 if(path[1] == 2){
                     this.controller.cursor_device.getMacro(path[2]).getAmount().set(data2, 128);
-                } else if(path[1] == 0){
+                } else if(path[1] === 0){
                     this.controller.cursor_device.getCommonParameter(path[2]).set(data2, 128);
                 }else{
                     this.controller.cursor_device.getParameter(path[2]).set(data2, 128);
@@ -239,7 +241,7 @@ DeviceBoard.prototype.getColorBits = function(path){
         if (path[2] < 4)
             return 48;
         if(path[2] == 4){
-            if(path[1] == 0)
+            if(path[1] === 0)
                 return 48;
             else
                 return 3;
@@ -267,7 +269,7 @@ DeviceBoard.prototype.getWeakColorBits = function(path){
             case 2: return 34;
             case 3: return 16;
             case 4: return 16;
-            case 5: return 17;
+            case 4: return 17;
             case 6: return 33;
             case 7: return 18;
         }
@@ -280,7 +282,7 @@ DeviceBoard.prototype.getWeakColorBits = function(path){
         if (path[2] < 4)
             return 17;
         if(path[2] == 4){
-            if(path[1] == 0)
+            if(path[1] === 0)
                 return 16;
             else
                 return 1;
@@ -326,7 +328,7 @@ DeviceBoard.prototype.getSoftValue = function(path){
 
     // An exception for the record state, yeah that's a sneaky workaround :)
     if(path[0] == "buttons" && path[1] == 1 && path[2] == 4)
-        return this.button_states["record"][this.selected_track_index]? 127 : 0;
+        return this.button_states.record[this.selected_track_index]? 127 : 0;
 
     if(path.length == 3)
         return this.device_values[path[0]][path[1]][path[2]];

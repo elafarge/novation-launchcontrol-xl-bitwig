@@ -1,3 +1,5 @@
+/* jshint loopfunc: true */
+
 /**
  * Author: Etienne Lafarge (etienne.lafarge@gmail.com, Github: elafarge)
  * Date: 07/2015
@@ -76,8 +78,8 @@ MacroBoard.prototype.onMidi = function(status, data1, data2){
      SoftTakeoverBoard.prototype.onMidi.call(this, status, data1, data2);
 
      // Tweak the knobs
-     if(this.hasControl(path) && this.macro_values[2 - path[1] + this.macro_offset][path[2]]
-        != -1){
+     if(this.hasControl(path) && this.macro_values[2 - path[1] + this.macro_offset][path[2]] != -1)
+     {
          this.controller.track_bank.getTrack(path[2]).getPrimaryDevice().
              getMacro(2 - path[1] + this.macro_offset).getAmount().set(data2, 128);
          this.macro_values[2 - path[1] + this.macro_offset][path[2]] = data2;

@@ -1,3 +1,4 @@
+/* jshint loopfunc: true */
 /**
  * Author: Etienne Lafarge (etienne.lafarge@gmail.com, Github: elafarge)
  * Date: 07/2015
@@ -42,8 +43,6 @@ MixerBoard = function(controller, channel){
         }
     };
 
-    var board = this;
-
     this.device_mode = false;
     this.selected_track_index = 0;
 
@@ -57,10 +56,10 @@ MixerBoard = function(controller, channel){
     this.track_color = [[8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48], [8, 48]];
 
     // Our nav and action control are assigned
-    for(var k in this.control_values["nav"])
+    for(var k in this.control_values.nav)
         this.setState(["nav", k], SoftTakeoverBoard.IN_CONTROL);
 
-    for(var k in this.control_values["action"])
+    for(k in this.control_values.action)
         this.setState(["action", k], SoftTakeoverBoard.IN_CONTROL);
 
     for(var i=0; i<8; i++){
@@ -70,25 +69,25 @@ MixerBoard = function(controller, channel){
 
     // Let's add mute/solo/arm/volume observers in there
     var board = this;
-    for(var i=0; i<8; i++){
+    for(i=0; i<8; i++){
         // In fact, I hate scopes and closures on second thought
         var track = this.controller.track_bank.getTrack(i);
         track.getMute().addValueObserver(makeIndexedFunction(i, function(j, yes){
-            board.button_states["mute"][j] = yes;
+            board.button_states.mute[j] = yes;
             if(board.mode == "mute"){
                 board.setSoftValue(["buttons", 1, j], yes ? 0 : 127);
                 board.updateLed(["buttons", 1, j]);
             }
         }));
         track.getSolo().addValueObserver(makeIndexedFunction(i, function(j, yes){
-            board.button_states["solo"][j] = yes;
+            board.button_states.solo[j] = yes;
             if(board.mode == "solo"){
                 board.setSoftValue(["buttons", 1, j], yes ? 127 : 0);
                 board.updateLed(["buttons", 1, j]);
             }
         }));
         track.getArm().addValueObserver(makeIndexedFunction(i, function(j, yes){
-            board.button_states["record"][j] = yes;
+            board.button_states.record[j] = yes;
             if(board.mode == "record"){
                 board.setSoftValue(["buttons", 1, j], yes ? 127 : 0);
                 board.updateLed(["buttons", 1, j]);
@@ -139,7 +138,7 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
     var path = Board.getControlPath(status, data1);
 
     // Let's handle the navigation
-    if (path[0] == "nav" && data2 != 0){
+    if (path[0] == "nav" && data2 !== 0){
        if(path[1] == "left"){
            this.disableAssignmentVisualFeedback();
            this.controller.track_bank.scrollTracksUp();
@@ -177,7 +176,7 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
         control.toggle();
     }
 
-    if(path[0] == "buttons" && path[1] == 0 && Math.floor(status/16) != 8){
+    if(path[0] == "buttons" && path[1] === 0 && Math.floor(status/16) != 8){
         this.controller.track_bank.getTrack(path[2]).select();
     }
 
@@ -232,7 +231,7 @@ MixerBoard.prototype.getWeakColorBits = function(path){
         return 8;
     else if(path[0] == "knobs" || (path[0] == "buttons" && !this.track_enabled[path[2]]))
         return 0;
-    else if(path[0] == "buttons" && path[1] == 0)
+    else if(path[0] == "buttons" && path[1] === 0)
         return this.track_color[path[2]][0];
     else if(path[0] == "buttons" && path[1] == 1){
         switch(this.mode){
@@ -250,7 +249,7 @@ MixerBoard.prototype.getColorBits = function(path){
         return 48;
     else if(path[0] == "knobs" || (path[0] == "buttons" && !this.track_enabled[path[2]]))
         return 0;
-    else if(path[0] == "buttons" && path[1] == 0)
+    else if(path[0] == "buttons" && path[1] === 0)
         return this.track_color[path[2]][1];
     else if(path[0] == "buttons" && path[1] == 1){
         switch(this.mode){
@@ -325,7 +324,7 @@ MixerBoard.prototype.setMode = function(mode){
     }
 
     // Let's update the row of buttons
-    for(var i = 0; i < 8; i++){
+    for(i=0; i < 8; i++){
         if(mode == "mute")
             this.setSoftValue(["buttons", 1, i], this.button_states[mode][i] ? 0 : 127);
         else

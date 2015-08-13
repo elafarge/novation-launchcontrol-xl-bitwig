@@ -15,7 +15,7 @@ Board = function(controller, channel){
 
     this.controller = controller;
     this.channel = channel;
-}
+};
 
 Board.LAYOUT = {
     "knobs": [
@@ -117,11 +117,11 @@ Board.getLedIndex = function(path){
         return Board.LED_LAYOUT[path[0]][path[1]];
     else
         throw "Incorrect path length, must be one or two";
-}
+};
 
 Board.getMidiChannel = function(status){
     return status % 16;
-}
+};
 
 /**
  * Returns the path to a given control.

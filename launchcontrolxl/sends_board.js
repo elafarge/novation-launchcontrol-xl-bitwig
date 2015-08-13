@@ -1,3 +1,5 @@
+/* jshint loopfunc: true */
+
 /**
  * Author: Etienne Lafarge (etienne.lafarge@gmail.com, Github: elafarge)
  * Date: 07/2015

@@ -1,3 +1,5 @@
+/* jshint loopfunc: true */
+
 /**
  * Author: Etienne Lafarge (etienne.lafarge@gmail.com, Github: elafarge)
  * Date: 07/2015
@@ -14,7 +16,7 @@ LiveBoard = function(controller, channel, channel_offset){
 
     this.channel_offset = channel_offset;
 
-    this.control_values["knobs"] = [
+    this.control_values.knobs = [
         [-1, -1, -1, -1, -1, -1, -1, -1],
         [-1, -1, -1, -1, -1, -1, -1, -1],
         [-1, -1, -1, -1, -1, -1, -1, -1]
@@ -46,7 +48,7 @@ LiveBoard = function(controller, channel, channel_offset){
     }
 
     // Let's listen for changes in Bitwig
-    for(var i=0; i<this.control_count; i++){
+    for(i=0; i<this.control_count; i++){
         var control = this.controller.bitwig_user_controls.getControl(this.bitwigControlNumber(i));
         control.setLabel(this.channel.toString() + this.reverse_layout[i].toString());
         control.addValueObserver(128, this.getValueChangedCallback(this.reverse_layout[i]));
@@ -157,7 +159,7 @@ LiveBoard.prototype.getWeakColorBits = function(path){
 };
 
 LiveBoard.prototype.getSoftValue = function(path){
-    if(path[0] == "knobs" && this.control_values["knobs"][path[1]][path[2]] == -1 &&
+    if(path[0] == "knobs" && this.control_values.knobs[path[1]][path[2]] == -1 &&
             !this.device_mode)
         return "unassigned";
     return DeviceBoard.prototype.getSoftValue.call(this, path);
