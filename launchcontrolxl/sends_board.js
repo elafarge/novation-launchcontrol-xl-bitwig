@@ -97,7 +97,7 @@ SendsBoard.prototype.getWeakColorBits = function(path){
     if(path[1] == 2)
         return 48;
 
-    return this.track_color[path[2]][1];
+    return this.track_color[path[2]][0];
 };
 
 SendsBoard.prototype.enableAssignmentVisualFeedback = function(horizontal){

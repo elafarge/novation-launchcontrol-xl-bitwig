@@ -15,26 +15,26 @@ SoftTakeoverBoard = function(controller, channel){
 
     this.diff = {
         "knobs": [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0]
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1]
         ],
         "buttons": [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0]
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1]
         ],
-        "faders": [0, 0, 0, 0, 0, 0, 0, 0],
+        "faders": [1, 1, 1, 1, 1, 1, 1, 1],
         "nav": {
-           "up": 0,
-           "down": 0,
-           "left": 0,
-           "right": 0
+           "up": 1,
+           "down": 1,
+           "left": 1,
+           "right": 1
        },
        "action": {
-          "device": 0,
-          "mute": 0,
-          "solo": 0,
-          "record": 0
+          "device": 1,
+          "mute": 1,
+          "solo": 1,
+          "record": 1
        }
     };
 
@@ -150,7 +150,7 @@ SoftTakeoverBoard.prototype.updateLed = function(path){
         color_code = 12; // As always, 12 has an essential role
         color_code_weak = color_code;
     } else if(this.getState(path) == SoftTakeoverBoard.TAKING_OVER) {
-        color_code = color_bits + 8;
+        color_code = this.getWeakColorBits(path) + 12;
     } else {
         // Full brightness...
         color_code = color_bits + 12;

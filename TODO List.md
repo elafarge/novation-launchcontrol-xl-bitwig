@@ -19,7 +19,7 @@ New Features
 * Scroll in sends (should work out of the box the the Bitwig 1.1 minor release).
 * Save the state of the launchpad when the script is exited and retrieve it when it wakes up
   (state = physical values of all the knobs and faders for a direct takeover when starting the
-  script). Apparently the new Bitwig API has bindings to write on disk, otherwise a network
+  script). Apparently the new Bitwig API has bindings to write on disk, otherwise a TCP
   service will be required.
 
 
@@ -31,8 +31,6 @@ Code improvements
 * Add comments a little bit everywhere.
 * Check the code with a code quality checker.
 * Add a CHANGLELOG.md and a CONTRIBUTING.md to the repo.
-* Determine what's better between blinking leds or soft colored leds for soft takeover (probably
-  the second option).
 
 Miscanellous
 ============

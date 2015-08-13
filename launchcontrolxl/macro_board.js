@@ -114,7 +114,7 @@ MacroBoard.prototype.getWeakColorBits = function(path){
     if(!this.track_enabled[path[2]])
         return 0;
 
-    return this.track_color[path[2]][1];
+    return this.track_color[path[2]][0];
 };
 
 MacroBoard.prototype.getSoftValue = function(path){
