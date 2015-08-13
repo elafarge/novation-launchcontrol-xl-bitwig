@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "-- INSTALLING THE BITWIG MAPPINGS FOR THE LAUNCHCONTROL --"
 echo "---- Determining the location of Bitwig's controller scripts.----"
 # Are we on OSX or on Linux

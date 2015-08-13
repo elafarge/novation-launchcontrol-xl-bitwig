@@ -28,7 +28,6 @@ Code improvements
 
 * Add a cursor_track to have control over the selected device Arm would be cool, right now I
   honestly don't know why the button is magicaly updating after the arm state has changed.
-* Add comments a little bit everywhere.
 * Add a CONTRIBUTING.md file to the repo.
 
 Miscanellous
