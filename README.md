@@ -1,6 +1,8 @@
 Novation LaunchControl XL - Bitwig Script
 =========================================
 
+[![Build Status](https://travis-ci.org/elafarge/novation-launchcontrol-xl-bitwig.svg)](https://travis-ci.org/elafarge/novation-launchcontrol-xl-bitwig)
+
 About this repository
 ---------------------
 

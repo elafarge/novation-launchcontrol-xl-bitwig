@@ -23,6 +23,7 @@ echo "---- Download of the controller script starts ----"
 curl -L https://github.com/elafarge/novation-launchcontrol-xl-bitwig/tarball/master -o novation-elafarge.tar.gz
 echo "---- Download successfull, decompressing and unarchiving the script ----"
 tar -xf novation-elafarge.tar.gz
+mv elafarge-novation-launchcontrol-xl-bitwig-* novation-elafarge
 
 # And let's prompt our user
 echo "---- The controller script for your LaunchControl XL has been installed successfully ----"
