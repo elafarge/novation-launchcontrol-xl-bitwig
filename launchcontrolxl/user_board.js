@@ -91,7 +91,7 @@ UserBoard = function(controller, channel, channel_offset){
     };
 
     // Since the number of controls can vary we have a function to make sure
-    // every number in [[0, n]] gets a controller assigned (where n is the
+    // every number in [[0, n]] gets a control assigned (where n is the
     // number of controls).
     this.control_count = this.assignNumbersToControls();
 
@@ -137,12 +137,6 @@ UserBoard.prototype = new SoftTakeoverBoard();
 ////////////////////////////////////////////////////////////////////////////////
 
 UserBoard.prototype.onMidi = function(status, data1, data2){
-
-    // Paranoia check, but in case...
-    if(status % 16 != this.channel)
-        throw "Warning: messages from channel " + status % 16 +
-              " also get sent to channel " + this.channel + "!"
-
     // And let's update the "hasControl" (in case we caught up)
     SoftTakeoverBoard.prototype.onMidi.call(this, status, data1, data2);
 
@@ -188,7 +182,7 @@ UserBoard.prototype.getValueChangedCallback = function(path){
         board_instance.setSoftValue(path, value);
         SoftTakeoverBoard.prototype.valueChangedCallback.call(board_instance, path, value);
     };
-}
+};
 
 UserBoard.prototype.getValueDisplayChangedCallback = function(path){
     var board_instance = this;
@@ -198,9 +192,41 @@ UserBoard.prototype.getValueDisplayChangedCallback = function(path){
         else if(!board_instance.isConfirmedAsAssigned(path)){
             board_instance.confirmAsAssigned(path);
             board_instance.setState(path, SoftTakeoverBoard.MOVIN_CONTROL);
+            board_instance.controller.bitwig_user_controls.getControl(board_instance.
+                getControlNumber(path)).setIndication(true);
         }
     };
-}
+};
+
+UserBoard.prototype.enable = function(){
+    SoftTakeoverBoard.prototype.enable.call(this);
+
+    // Let's put an indicator on every assigned fader and knob
+    for(var i=0; i<8; i++){
+        if(this.getState(['faders', i]) != SoftTakeoverBoard.UNASSIGNED)
+            this.controller.bitwig_user_controls.getControl(this.getControlNumber(['faders', i])).
+                setIndication(true);
+        for(var j=0; j<3; j++){
+            if(this.getState(['knobs', j, i]) != SoftTakeoverBoard.UNASSIGNED)
+                this.controller.bitwig_user_controls.getControl(
+                    this.getControlNumber(['knobs', j, i])).setIndication(true);
+        }
+    }
+};
+
+UserBoard.prototype.disable = function(){
+    SoftTakeoverBoard.prototype.disable.call(this);
+
+    // Let's put an indicator on every assigned fader and knob
+    for(var i=0; i<8; i++){
+        this.controller.bitwig_user_controls.getControl(this.getControlNumber(['faders', i])).
+            setIndication(false);
+        for(var j=0; j<3; j++){
+            this.controller.bitwig_user_controls.getControl(
+                this.getControlNumber(['knobs', j, i])).setIndication(false);
+        }
+    }
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 ////// Getters, setters and utilities (play no role in the event stream) ///////
@@ -215,7 +241,7 @@ UserBoard.prototype.getSoftValue = function(path){
     else
         throw "Incorrect path length, must be one or two";
     return (value == -1) ? "unassigned" : value;
-}
+};
 
 UserBoard.prototype.setSoftValue = function(path, value){
     if(path.length == 3)
@@ -224,7 +250,7 @@ UserBoard.prototype.setSoftValue = function(path, value){
         this.control_values[path[0]][path[1]] = value;
     else
         throw "Incorrect path length, must be one or two";
-}
+};
 
 UserBoard.prototype.getControlNumber = function(path){
     if(path.length == 3)
@@ -233,7 +259,7 @@ UserBoard.prototype.getControlNumber = function(path){
         return this.bitwigControlNumber(this.layout[path[0]][path[1]]);
     else
         throw "Incorrect path length, must be one or two";
-}
+};
 
 UserBoard.prototype.bitwigControlNumber = function(i){
     return i + this.channel_offset;
@@ -258,7 +284,7 @@ UserBoard.prototype.assignNumbersToControls = function(){
         }
     }
     return ++k;
-}
+};
 
 UserBoard.prototype.confirmAsAssigned = function(path){
     if(path.length == 3)
@@ -268,7 +294,7 @@ UserBoard.prototype.confirmAsAssigned = function(path){
     else
         throw "Incorrect path length, must be one or two";
 
-}
+};
 
 UserBoard.prototype.isConfirmedAsAssigned = function(path){
     if(path.length == 3)
@@ -277,4 +303,4 @@ UserBoard.prototype.isConfirmedAsAssigned = function(path){
         return this.assigned[path[0]][path[1]];
     else
         throw "Incorrect path length, must be one or two";
-}
+};

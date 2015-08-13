@@ -9,6 +9,10 @@
 // Let's build out the led indexes
 
 Board = function(controller, channel){
+    // For inheritance with new
+    if(typeof controller == "undefined")
+        return;
+
     this.controller = controller;
     this.channel = channel;
 }

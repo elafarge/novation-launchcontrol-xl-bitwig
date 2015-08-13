@@ -7,30 +7,34 @@
  */
 
 SoftTakeoverBoard = function(controller, channel){
+    // For inheritance with new
+    if(typeof(controller) == "undefined")
+        return;
+
     Board.call(this, controller, channel);
 
     this.diff = {
         "knobs": [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0]
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1]
         ],
         "buttons": [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0]
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1]
         ],
-        "faders": [0, 0, 0, 0, 0, 0, 0, 0],
+        "faders": [1, 1, 1, 1, 1, 1, 1, 1],
         "nav": {
-           "up": 0,
-           "down": 0,
-           "left": 0,
-           "right": 0
+           "up": 1,
+           "down": 1,
+           "left": 1,
+           "right": 1
        },
        "action": {
-          "device": 0,
-          "mute": 0,
-          "solo": 0,
-          "record": 0
+          "device": 1,
+          "mute": 1,
+          "solo": 1,
+          "record": 1
        }
     };
 
@@ -70,26 +74,26 @@ SoftTakeoverBoard.prototype = new Board();
 // It's static since it should be persisted accross boards
 SoftTakeoverBoard.CONTROL_VALUE = {
     "knobs": [
-        [64, 64, 64, 64, 64, 64, 64, 64],
-        [64, 64, 64, 64, 64, 64, 64, 64],
-        [64, 64, 64, 64, 64, 64, 64, 64]
+        [128, 128, 128, 128, 128, 128, 128, 128],
+        [128, 128, 128, 128, 128, 128, 128, 128],
+        [128, 128, 128, 128, 128, 128, 128, 128]
     ],
-    "faders": [0, 0, 0, 0, 0, 0, 0, 0],
+    "faders": [128, 128, 128, 128, 128, 128, 128, 128],
     "buttons": [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0]
+        [128, 128, 128, 128, 128, 128, 128, 128],
+        [128, 128, 128, 128, 128, 128, 128, 128]
     ],
     "nav": {
-       "up": 0,
-       "down": 0,
-       "left": 0,
-       "right": 0
+       "up": 128,
+       "down": 128,
+       "left": 128,
+       "right": 128
    },
    "action": {
-      "device": 0,
-      "mute": 0,
-      "solo": 0,
-      "record": 0
+      "device": 128,
+      "mute": 128,
+      "solo": 128,
+      "record": 128
    }
 };
 
@@ -107,7 +111,7 @@ SoftTakeoverBoard.COLOR_SPLIT_BY_DIFF = [0.35, 0.80];
 
 SoftTakeoverBoard.prototype.getWeakColorBits = function(path){
     if(path[0] == "action") {
-           return 8;
+        return 8;
     } else {
         switch(path[2] % 4){
             case 0: return 16;
@@ -120,7 +124,7 @@ SoftTakeoverBoard.prototype.getWeakColorBits = function(path){
 
 SoftTakeoverBoard.prototype.getColorBits = function(path){
     if(path[0] == "action") {
-           return 48;
+        return 48;
     } else if (path[0] == "faders"){
         return (path[1] % 4) + (3 - path[1] % 4)*16;
     } else {
@@ -132,7 +136,6 @@ SoftTakeoverBoard.prototype.getColorBits = function(path){
         }
     }
 };
-
 
 SoftTakeoverBoard.prototype.updateLed = function(path){
 
@@ -147,7 +150,7 @@ SoftTakeoverBoard.prototype.updateLed = function(path){
         color_code = 12; // As always, 12 has an essential role
         color_code_weak = color_code;
     } else if(this.getState(path) == SoftTakeoverBoard.TAKING_OVER) {
-        color_code = color_bits + 8;
+        color_code = this.getWeakColorBits(path) + 12;
     } else {
         // Full brightness...
         color_code = color_bits + 12;
@@ -158,7 +161,6 @@ SoftTakeoverBoard.prototype.updateLed = function(path){
                 color_code = this.getWeakColorBits(path) + 12;
         }
     }
-
     // Faders don't have leds, give it up (we still have the takeover leds to help
     // us catch up)
     if(path[0] == "faders")
@@ -240,6 +242,10 @@ SoftTakeoverBoard.prototype.isAssigned = function(path){
 // Let's update the appropriate led when a led controller is tweaked
 // What happens to button leds is left to the underlying implementation
 SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
+    // Paranoia check, but in case...
+    if(status % 16 != this.channel)
+        throw "Warning: messages from channel " + status % 16 +
+              " also get sent to channel " + this.channel + "!"
     var path = Board.getControlPath(status, data1);
 
     switch(this.getState(path)){
@@ -272,15 +278,15 @@ SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
 };
 
 // Assumption that you have to respect in the callback calling this one
-// this.getSoftValue(path) == value !!
+// this.getSoftValue(path) == value !! TODO: remove value parameter
 SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
     if(value == "undefined")
         this.setState(path, SoftTakeoverBoard.UNASSIGNED);
+    var new_diff = SoftTakeoverBoard.getControlValue(path) - this.getSoftValue(path);
 
     switch(this.getState(path)){
         case SoftTakeoverBoard.TAKING_OVER:
             var diff = this.getDiff(path);
-            var new_diff = SoftTakeoverBoard.getControlValue(path) - value;
             if(diff * new_diff  <= 0){
                 this.setState(path, SoftTakeoverBoard.IN_CONTROL);
                 new_diff = 0;
@@ -289,6 +295,8 @@ SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
             break;
 
         case SoftTakeoverBoard.IN_CONTROL:
+            if(["nav", "buttons", "action"].indexOf(path[0]) > -1)
+                break;
             if(SoftTakeoverBoard.getControlValue(path) != value)
                 this.setState(path, SoftTakeoverBoard.TAKING_OVER);
             this.setDiff(path, new_diff);
@@ -297,18 +305,25 @@ SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
         case SoftTakeoverBoard.MOVIN_CONTROL:
             if(SoftTakeoverBoard.getControlValue(path) == value)
                 this.setState(path, SoftTakeoverBoard.IN_CONTROL);
-            this.setDiff(path, SoftTakeoverBoard.getControlValue(path) - value);
+            this.setDiff(path, new_diff);
             break;
     }
 
     if(["nav", "buttons", "action"].indexOf(path[0]) == -1)
         this.updateTakeoverLeds(path);
-}
+};
 
 SoftTakeoverBoard.prototype.enable = function(){
     // Let's reset the LEDs for this template
     this.controller.sendMidi(11*16 + this.channel, 0, 0);
 
+    this.resetAllControlsState();
+
+    // Let's enable flashing for this channel
+    this.controller.sendMidi(176 + this.channel, 0, 40);
+};
+
+SoftTakeoverBoard.prototype.resetAllControlsState = function(){
     // Let's update all the leds
     for(var i=0; i<3; i++)
         for(var j=0; j<8; j++)
@@ -326,9 +341,6 @@ SoftTakeoverBoard.prototype.enable = function(){
 
     for(key in this.diff['action'])
         this.resetControlState(["action", key]);
-
-    // Let's enable flashing for this channel
-    this.controller.sendMidi(176 + this.channel, 0, 40);
 };
 
 SoftTakeoverBoard.prototype.resetControlState = function(path){
@@ -339,16 +351,17 @@ SoftTakeoverBoard.prototype.resetControlState = function(path){
         var diff = SoftTakeoverBoard.getControlValue(path) - soft_value;
         if(["buttons", "nav", "action"].indexOf(path[0]) > -1){
             if(diff != 0)
-                this.setSoftValue(path, soft_value);
+                this.setState(path, SoftTakeoverBoard.IN_CONTROL);
         } else {
                 this.setDiff(path, diff);
                 this.setState(path, (diff == 0) ? SoftTakeoverBoard.IN_CONTROL :
                         SoftTakeoverBoard.TAKING_OVER);
             }
-        // We have to send led information even if the state didn't change
-        this.updateLed(path);
     }
-}
+    // We have to send led information even if the state didn't change
+    if(path[0] != "nav")
+        this.updateLed(path);
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 ////// Getters, setters and utilities (play no role in the event stream) ///////
@@ -413,7 +426,7 @@ SoftTakeoverBoard.prototype.setState = function(path, state){
     if(path[0] != "nav" && (old_state != state ||
            ["action", "buttons"].indexOf(path[0]) > -1))
         this.updateLed(path);
-}
+};
 
 /**
  * The implementations are dummy, child classes should always implement these

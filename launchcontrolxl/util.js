@@ -34,3 +34,21 @@ function log_midi(status, data1, data2){
     if(LOG_LEVEL <= INFO)
         printMidi(status, data1, data2);
 }
+
+function makeIndexedFunction(index, f){
+    return function(value){
+        f(index, value);
+    };
+}
+
+function makeIndexedThreeArgsFunction(index, f){
+    return function(x, y, z){
+        f(index, x, y, z);
+    };
+}
+
+function makeDoubleIndexedFunction(i, j, f){
+    return function(value){
+        f(i, j, value);
+    };
+};
