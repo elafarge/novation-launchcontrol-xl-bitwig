@@ -30,7 +30,6 @@ Code improvements
   honestly don't know why the button is magicaly updating after the arm state has changed.
 * Add comments a little bit everywhere.
 * Add a CHANGLELOG.md, license file and a CONTRIBUTING.md to the repo.
-* Use jshint to check the quality of this code.
 
 Miscanellous
 ============
