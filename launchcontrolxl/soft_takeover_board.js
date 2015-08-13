@@ -1,3 +1,5 @@
+/* jshint loopfunc: true */
+
 /**
  * Author: Etienne Lafarge (etienne.lafarge@gmail.com, Github: elafarge)
  * Date: 07/2015
@@ -245,7 +247,7 @@ SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
     // Paranoia check, but in case...
     if(status % 16 != this.channel)
         throw "Warning: messages from channel " + status % 16 +
-              " also get sent to channel " + this.channel + "!"
+              " also get sent to channel " + this.channel + "!";
     var path = Board.getControlPath(status, data1);
 
     switch(this.getState(path)){
@@ -329,17 +331,17 @@ SoftTakeoverBoard.prototype.resetAllControlsState = function(){
         for(var j=0; j<8; j++)
             this.resetControlState(["knobs", i, j]);
 
-    for(var i=0; i<8; i++)
+    for(i=0; i<8; i++)
             this.resetControlState(["faders", i]);
 
-    for(var i=0; i<2; i++)
-        for(var j=0; j<8; j++)
-            this.resetControlState(["buttons", i, j]);
+    for(i=0; i<2; i++)
+        for(var k=0; k<8; k++)
+            this.resetControlState(["buttons", i, k]);
 
-    for(key in this.diff['nav'])
+    for(var key in this.diff.nav)
         this.resetControlState(["nav", key]);
 
-    for(key in this.diff['action'])
+    for(key in this.diff.action)
         this.resetControlState(["action", key]);
 };
 
@@ -350,11 +352,11 @@ SoftTakeoverBoard.prototype.resetControlState = function(path){
     } else {
         var diff = SoftTakeoverBoard.getControlValue(path) - soft_value;
         if(["buttons", "nav", "action"].indexOf(path[0]) > -1){
-            if(diff != 0)
+            if(diff !== 0)
                 this.setState(path, SoftTakeoverBoard.IN_CONTROL);
         } else {
                 this.setDiff(path, diff);
-                this.setState(path, (diff == 0) ? SoftTakeoverBoard.IN_CONTROL :
+                this.setState(path, (diff === 0) ? SoftTakeoverBoard.IN_CONTROL :
                         SoftTakeoverBoard.TAKING_OVER);
             }
     }

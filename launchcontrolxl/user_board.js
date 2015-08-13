@@ -1,3 +1,5 @@
+/* jshint loopfunc: true */
+
 /**
  * Author: Etienne Lafarge (etienne.lafarge@gmail.com, Github: elafarge)
  * Date: 07/2015
@@ -108,9 +110,9 @@ UserBoard = function(controller, channel, channel_offset){
                 for(var i = 0; i < this.layout[key].length; i++)
                     this.reverse_layout[this.layout[key][i]] = [key, i];
             } else {
-                for(var i = 0; i < this.layout[key].length; i++) {
-                    for(var j = 0; j < this.layout[key][i].length; j++){
-                        this.reverse_layout[this.layout[key][i][j]] = [key, i, j];
+                for(var k=0; k < this.layout[key].length; k++) {
+                    for(var j = 0; j < this.layout[key][k].length; j++){
+                        this.reverse_layout[this.layout[key][k][j]] = [key, k, j];
                     }
                 }
             }
@@ -118,14 +120,14 @@ UserBoard = function(controller, channel, channel_offset){
     }
 
     // Let's bind the controls to bitwig's user board and setup observers on it
-    for(var i=0; i<this.control_count; i++){
-        var control = this.controller.bitwig_user_controls.getControl(this.bitwigControlNumber(i));
-        control.setLabel(this.channel.toString() + this.reverse_layout[i].toString());
-        control.addValueObserver(128, this.getValueChangedCallback(this.reverse_layout[i]));
+    for(var l=0; l<this.control_count; l++){
+        var control = this.controller.bitwig_user_controls.getControl(this.bitwigControlNumber(l));
+        control.setLabel(this.channel.toString() + this.reverse_layout[l].toString());
+        control.addValueObserver(128, this.getValueChangedCallback(this.reverse_layout[l]));
         // We need this one exceptionnaly because there's no other way to get the
         // unassigned state
         control.addValueDisplayObserver(10, "undefined", this.getValueDisplayChangedCallback(
-            this.reverse_layout[i]));
+            this.reverse_layout[l]));
 
     }
 };
@@ -157,7 +159,7 @@ UserBoard.prototype.onMidi = function(status, data1, data2){
             this.setSoftValue(path, data2);
         } else {
             // Let's ignore note off events (button release)
-            if(Math.floor(status/16) == 8 || path[0] == 'nav' && data2 == 0)
+            if(Math.floor(status/16) == 8 || path[0] == 'nav' && data2 === 0)
                 return;
 
             // In our user mapping, we want buttons to act as toggles
@@ -276,9 +278,9 @@ UserBoard.prototype.assignNumbersToControls = function(){
                 for(var i = 0; i < this.layout[key].length; i++)
                     this.layout[key][i] = ++k;
             } else {
-                for(var i = 0; i < this.layout[key].length; i++) {
-                    for(var j = 0; j < this.layout[key][i].length; j++)
-                        this.layout[key][i][j] = ++k;
+                for(var l=0; l < this.layout[key].length; l++) {
+                    for(var j = 0; j < this.layout[key][l].length; j++)
+                        this.layout[key][l][j] = ++k;
                 }
             }
         }

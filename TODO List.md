@@ -28,12 +28,11 @@ Code improvements
 
 * Add a cursor_track to have control over the selected device Arm would be cool, right now I
   honestly don't know why the button is magicaly updating after the arm state has changed.
-* Add comments a little bit everywhere.
-* Check the code with a code quality checker.
-* Add a CHANGLELOG.md and a CONTRIBUTING.md to the repo.
+* Add a CONTRIBUTING.md file to the repo.
 
 Miscanellous
 ============
 
 * Write a quick article describing the features of this script and put it in the README.md. Also
-  installation instructions and a little history of this repo would be welcome.
+  installation instructions and a little history of this repo would be welcome. Github pages or
+  the standard Github wiki could also be interesting alternatives for docs.

@@ -51,4 +51,4 @@ function makeDoubleIndexedFunction(i, j, f){
     return function(value){
         f(i, j, value);
     };
-};
+}

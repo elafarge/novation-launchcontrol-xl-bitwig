@@ -39,7 +39,7 @@ Controller = function(bw_host){
 };
 
 Controller.prototype.onMidi = function(status, data1, data2){
-    if(this.currentBoard != null)
+    if(this.currentBoard !== null)
         this.currentBoard().onMidi(status, data1, data2);
 };
 
@@ -81,7 +81,7 @@ Controller.prototype.enableBoard = function(i){
     // Paranoia check
     if(i < 0 || i >= this.boards.length)
         throw "Error in enableBoard(" + i + "): Invalid board number. There " +
-            "is only " + this.boards.length + " boards available."
+            "is only " + this.boards.length + " boards available.";
 
     if(this.current_board_number >= 0)
         this.currentBoard().disable();
