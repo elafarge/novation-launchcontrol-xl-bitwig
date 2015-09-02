@@ -1,7 +1,7 @@
 TODO List
 ---------
 
-Feel free to pick up a task and implementing if you don't have anything else to do :)
+Feel free to pick up a task and implement it.
 
 New Features
 ============
@@ -16,11 +16,12 @@ New Features
   Launchcontrol). That would be cool for a mixing session where one might want to be able to
   switch between effects only. Extending the existing UserMode should be a good approach.
 * Track navigation synchronized with the Novation Launchpad (make a PR against their repo).
-* Scroll in sends (should work out of the box the the Bitwig 1.1 minor release).
+* Scroll in sends: investigate what doesn't work and fix it
 * Save the state of the launchpad when the script is exited and retrieve it when it wakes up
   (state = physical values of all the knobs and faders for a direct takeover when starting the
-  script). Apparently the new Bitwig API has bindings to write on disk, otherwise a TCP
-  service will be required.
+  script). Since Bitwig's API doesn't seem to provide a good way to write on DIsk, I was thinking
+  of hiding the state in controller parameters on `exit()` and to fetch them on `start()` and then
+  get them deleted to stop the end user from witnessing this dirty trick in the UI.
 
 
 Code improvements
