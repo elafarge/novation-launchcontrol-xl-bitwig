@@ -45,6 +45,8 @@ MixerBoard = function(controller, channel){
 
     this.device_mode = false;
     this.selected_track_index = 0;
+    this.last_hit = null;
+    this.consecutive_hits = 0;
 
     this.button_states = {
         "mute": [false, false, false, false, false, false, false, false],
@@ -177,7 +179,12 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
     }
 
     if(path[0] == "buttons" && path[1] === 0 && Math.floor(status/16) != 8){
-        this.controller.track_bank.getTrack(path[2]).select();
+        if(this.last_hit !== null && this.last_hit === path[2])
+            this.enableDeviceMode();
+        else {
+            this.controller.track_bank.getTrack(path[2]).select();
+            this.bowLastHitString(path[2]);
+        }
     }
 
     // And let's update the "hasControl" (in case we caught up)
@@ -200,6 +207,21 @@ MixerBoard.prototype.enable = function(){
 MixerBoard.prototype.disable = function(){
     this.disableAssignmentVisualFeedback();
     Board.prototype.disable.call(this);
+};
+
+MixerBoard.prototype.bowLastHitString = function(button_number){
+    if(this.last_hit === button_number)
+        this.consecutive_hits++;
+    else
+        this.consecutive_hits = 1;
+    this.last_hit = button_number;
+    var board = this;
+    this.controller.host.scheduleTask(function(btn_nb){
+        if(board.last_hit === btn_nb)
+            board.consecutive_hits--;
+        if(board.consecutive_hits === 0)
+            board.last_hit = null;
+    }, [button_number], 500);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -300,6 +322,7 @@ MixerBoard.prototype.showSelectedMode = function(){
 
 MixerBoard.prototype.enableDeviceMode = function(){
     this.setSoftValue(["action", "device"], 127);
+    this.updateLed(["action", "device"]);
     this.disableAssignmentVisualFeedback();
     this.device_mode = true;
     this.enableAssignmentVisualFeedback();
@@ -308,6 +331,7 @@ MixerBoard.prototype.enableDeviceMode = function(){
 
 MixerBoard.prototype.enableMixerMode = function(){
     this.setSoftValue(["action", "device"], 0);
+    this.updateLed(["action", "device"]);
     this.disableAssignmentVisualFeedback();
     this.device_mode = false;
     this.enableAssignmentVisualFeedback();

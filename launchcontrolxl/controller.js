@@ -12,6 +12,19 @@ Controller = function(bw_host){
     this.boards = [];
     this.current_board_number = -1;
 
+    // Let's set the notification levels
+    log_info("Setting notification settings");
+    this.notification_settings = this.host.getNotificationSettings();
+    this.notification_settings.getUserNotificationsEnabled().set(true);
+    this.notification_settings.setShouldShowSelectionNotifications(false);
+    this.notification_settings.setShouldShowChannelSelectionNotifications(false);
+    this.notification_settings.setShouldShowTrackSelectionNotifications(false);
+    this.notification_settings.setShouldShowDeviceSelectionNotifications(false);
+    this.notification_settings.setShouldShowDeviceLayerSelectionNotifications(false);
+    this.notification_settings.setShouldShowPresetNotifications(false);
+    this.notification_settings.setShouldShowMappingNotifications(false);
+    this.notification_settings.setShouldShowValueNotifications(false);
+
     // Unfortunately we can have only one control section per controller so we
     // have to create it here once and for all for the 8 user channels
     this.user_control_count = Board.CONTROL_COUNT*8 + 2*LiveBoard.USER_CONTROL_COUNT;

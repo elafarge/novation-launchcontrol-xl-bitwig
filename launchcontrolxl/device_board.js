@@ -45,6 +45,10 @@ DeviceBoard = function(controller, channel){
         }
     };
 
+    this.slot_names = [];
+    this.select_slot = -1;
+    this.cursor_slot = null;
+
     // Let's register our observers
     var board = this;
     for(var i=0; i<8; i++){
@@ -103,6 +107,22 @@ DeviceBoard = function(controller, channel){
             board.setSoftValue(["buttons", 0, 4], yes? 127 : 0, true);
             SoftTakeoverBoard.prototype.valueChangedCallback.call(board, ["buttons", 0, 4],
                 yes? 127 : 0);
+        });
+
+        // Callbacks for navigation accross slots
+        this.controller.cursor_device.addSlotsObserver(function(slots){
+            board.slot_names = slots;
+        });
+
+        this.controller.cursor_device.hasSlots().addValueObserver(function(has_slots){
+            if(has_slots) {
+                board.selected_slot = 0;
+                board.cursor_slot = board.controller.cursor_device.getCursorSlot();
+                board.cursor_slot.selectSlot(board.slot_names[board.selected_slot]);
+            } else {
+                board.selected_slot = -1;
+                board.cursor_slot = null;
+            }
         });
     }
 };
@@ -172,6 +192,25 @@ DeviceBoard.prototype.onMidi = function(status, data1, data2){
                     this.setSoftValue(path, 127, true);
                     SoftTakeoverBoard.prototype.valueChangedCallback.call(this, path, 127);
                 }
+            }
+        }
+
+        // Nested navigation
+        if(path[0] == "action" && Math.floor(status/16) != 8 && this.cursor_slot !== null){
+            switch(path[1]){
+                case "mute":
+                    this.controller.cursor_device.selectParent();
+                    break;
+                case "solo":
+                    this.controller.cursor_device.selectFirstInSlot(
+                        this.slot_names[this.selected_slot]);
+                    break;
+                case "record":
+                    this.selected_slot++;
+                    if(this.selected_slot >= this.slot_names.length)
+                        this.selected_slot = 0;
+                    this.cursor_slot.selectSlot(this.slot_names[this.selected_slot]);
+                    break;
             }
         }
 
@@ -274,8 +313,6 @@ DeviceBoard.prototype.getWeakColorBits = function(path){
             case 7: return 18;
         }
     }
-
-    // TODO: Action buttons
 
     // The buttons
     if(path[0] == "buttons"){
