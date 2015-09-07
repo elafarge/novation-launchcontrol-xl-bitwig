@@ -264,7 +264,7 @@ DeviceBoard.prototype.enableMixerMode = function(){
 };
 
 DeviceBoard.prototype.getColorBits = function(path){
-    if(!this.device_mode)
+    if(!this.device_mode || path[0] === "action" && path[1] === "device")
         return MixerBoard.prototype.getColorBits.call(this, path);
 
     if(["knobs", "faders"].indexOf(path[0]) > -1){
@@ -302,7 +302,7 @@ DeviceBoard.prototype.getColorBits = function(path){
 };
 
 DeviceBoard.prototype.getWeakColorBits = function(path){
-    if(!this.device_mode)
+    if(!this.device_mode || path[0] === "action" && path[1] === "device")
         return MixerBoard.prototype.getWeakColorBits.call(this, path);
 
     //knobs and faders
@@ -366,7 +366,7 @@ DeviceBoard.prototype.disableAssignmentVisualFeedback = function(){
 };
 
 DeviceBoard.prototype.getSoftValue = function(path){
-    if(!this.device_mode)
+    if(!this.device_mode || path[0] === "action" && path[1] === "device")
         return MixerBoard.prototype.getSoftValue.call(this, path);
 
     // An exception for the record state, yeah that's a sneaky workaround :)
@@ -385,7 +385,7 @@ DeviceBoard.prototype.setSoftValue = function(path, value, from_device){
     if(typeof from_device == "undefined")
         from_device = false;
 
-    if(!this.device_mode && !from_device)
+    if(!this.device_mode && !from_device || path[0] === "action" && path[1] === "device")
         return MixerBoard.prototype.setSoftValue.call(this, path, value);
 
     if(path.length == 3)

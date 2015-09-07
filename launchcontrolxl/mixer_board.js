@@ -331,18 +331,18 @@ MixerBoard.prototype.showSelectedMode = function(){
 };
 
 MixerBoard.prototype.enableDeviceMode = function(){
-    this.setSoftValue(["action", "device"], 127);
-    this.updateLed(["action", "device"]);
     this.disableAssignmentVisualFeedback();
     this.device_mode = true;
+    this.setSoftValue(["action", "device"], 127);
+    this.updateLed(["action", "device"]);
     this.enableAssignmentVisualFeedback();
     this.resetAllControlsState();
 };
 
 MixerBoard.prototype.enableMixerMode = function(){
+    this.disableAssignmentVisualFeedback();
     this.setSoftValue(["action", "device"], 0);
     this.updateLed(["action", "device"]);
-    this.disableAssignmentVisualFeedback();
     this.device_mode = false;
     this.enableAssignmentVisualFeedback();
     this.resetAllControlsState();
