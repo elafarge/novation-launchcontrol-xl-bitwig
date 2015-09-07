@@ -78,51 +78,61 @@ MixerBoard = function(controller, channel){
             board.button_states.mute[j] = yes;
             if(board.mode == "mute"){
                 board.setSoftValue(["buttons", 1, j], yes ? 0 : 127);
-                board.updateLed(["buttons", 1, j]);
+                if(!board.device_mode)
+                    board.updateLed(["buttons", 1, j]);
             }
         }));
         track.getSolo().addValueObserver(makeIndexedFunction(i, function(j, yes){
             board.button_states.solo[j] = yes;
             if(board.mode == "solo"){
                 board.setSoftValue(["buttons", 1, j], yes ? 127 : 0);
-                board.updateLed(["buttons", 1, j]);
+                if(!board.device_mode)
+                    board.updateLed(["buttons", 1, j]);
             }
         }));
         track.getArm().addValueObserver(makeIndexedFunction(i, function(j, yes){
             board.button_states.record[j] = yes;
             if(board.mode == "record"){
                 board.setSoftValue(["buttons", 1, j], yes ? 127 : 0);
-                board.updateLed(["buttons", 1, j]);
+                if(!board.device_mode)
+                    board.updateLed(["buttons", 1, j]);
             }
         }));
         track.getVolume().addValueObserver(128, makeIndexedFunction(i, function(j, value){
             board.setSoftValue(["faders", j], value);
-            SoftTakeoverBoard.prototype.valueChangedCallback.call(board, ["faders", j], value);
+            if(!board.device_mode)
+                SoftTakeoverBoard.prototype.valueChangedCallback.call(board, ["faders", j], value);
         }));
 
         // And track select feedback is setup here
         track.addIsSelectedObserver(makeIndexedFunction(i, function(j, yes){
             board.setSoftValue(["buttons", 0, j], yes ? 127 : 0);
-            board.updateLed(["buttons", 0, j]);
+            if(!board.device_mode)
+                board.updateLed(["buttons", 0, j]);
             board.selected_track_index = j;
         }));
 
         // And let's add an exist observer to keep track of the unexisting tracks
         track.exists().addValueObserver(makeIndexedFunction(i, function(j, yes){
             board.track_enabled[j] = yes;
-            board.updateLed(["buttons", 0, j]);
-            board.updateLed(["buttons", 1, j]);
-            board.updateLed(["knobs", 0, j]);
-            board.updateLed(["knobs", 1, j]);
-            board.updateLed(["knobs", 2, j]);
+
+            if(!board.device_mode){
+                board.updateLed(["buttons", 0, j]);
+                board.updateLed(["buttons", 1, j]);
+                board.updateLed(["knobs", 0, j]);
+                board.updateLed(["knobs", 1, j]);
+                board.updateLed(["knobs", 2, j]);
+            }
         }));
 
         track.addColorObserver(makeIndexedThreeArgsFunction(i, function(j, r, g, b){
             board.track_color[j] = MixerBoard.projectedColor(r, g, b);
-            board.updateLed(["buttons", 0, j]);
-            board.updateLed(["knobs", 0, j]);
-            board.updateLed(["knobs", 1, j]);
-            board.updateLed(["knobs", 2, j]);
+            if(!board.device_mode){
+               board.updateLed(["buttons", 0, j]);
+               board.updateLed(["knobs", 0, j]);
+               board.updateLed(["knobs", 1, j]);
+               board.updateLed(["knobs", 2, j]);
+            }
         }));
     }
     this.setMode("mute");

@@ -55,26 +55,30 @@ DeviceBoard = function(controller, channel){
         this.controller.cursor_device.getEnvelopeParameter(i).addValueObserver(128,
             makeIndexedFunction(i, function(k, value){
                 board.setSoftValue(["faders", k], value, true);
-                SoftTakeoverBoard.prototype.valueChangedCallback.call(board,
-                    ["faders", k], value);
+                if(board.device_mode)
+                    SoftTakeoverBoard.prototype.valueChangedCallback.call(board,
+                        ["faders", k], value);
             }));
         this.controller.cursor_device.getMacro(i).getAmount().addValueObserver(128,
             makeIndexedFunction(i, function(k, value){
                 board.setSoftValue(["knobs", 2, k], value, true);
-                SoftTakeoverBoard.prototype.valueChangedCallback.call(board,
-                    ["knobs", 2, k], value);
+                if(board.device_mode)
+                    SoftTakeoverBoard.prototype.valueChangedCallback.call(board,
+                        ["knobs", 2, k], value);
             }));
         this.controller.cursor_device.getCommonParameter(i).addValueObserver(128,
             makeIndexedFunction(i, function(k, value){
                 board.setSoftValue(["knobs", 0, k], value, true);
-                SoftTakeoverBoard.prototype.valueChangedCallback.call(board,
-                    ["knobs", 0, k], value);
+                if(board.device_mode)
+                    SoftTakeoverBoard.prototype.valueChangedCallback.call(board,
+                        ["knobs", 0, k], value);
             }));
         this.controller.cursor_device.getParameter(i).addValueObserver(128,
             makeIndexedFunction(i, function(k, value){
                 board.setSoftValue(["knobs", 1, k], value, true);
-                SoftTakeoverBoard.prototype.valueChangedCallback.call(board,
-                    ["knobs", 1, k], value);
+                if(board.device_mode)
+                    SoftTakeoverBoard.prototype.valueChangedCallback.call(board,
+                        ["knobs", 1, k], value);
             }));
         // The modulation source observer
         this.controller.cursor_device.getMacro(i).getModulationSource().addIsMappingObserver(
@@ -83,8 +87,9 @@ DeviceBoard = function(controller, channel){
                 var y = k % 4;
 
                 board.setSoftValue(["buttons", x, y], is_mapping? 127 : 0, true);
-                SoftTakeoverBoard.prototype.valueChangedCallback.call(board, ["buttons", x, y],
-                    is_mapping? 127 : 0);
+                if(board.device_mode)
+                    SoftTakeoverBoard.prototype.valueChangedCallback.call(board, ["buttons", x, y],
+                        is_mapping? 127 : 0);
 
                 // Let's have soft takeover enabled for when we exit modulation mode, unfortunately
                 // we can't do that when we enter modulation mode because we don't have access to
@@ -105,8 +110,9 @@ DeviceBoard = function(controller, channel){
         // The is_enabled toggle
         this.controller.cursor_device.addIsEnabledObserver(function(yes){
             board.setSoftValue(["buttons", 0, 4], yes? 127 : 0, true);
-            SoftTakeoverBoard.prototype.valueChangedCallback.call(board, ["buttons", 0, 4],
-                yes? 127 : 0);
+                if(board.device_mode)
+                SoftTakeoverBoard.prototype.valueChangedCallback.call(board, ["buttons", 0, 4],
+                    yes? 127 : 0);
         });
 
         // Callbacks for navigation accross slots

@@ -92,7 +92,8 @@ LiveBoard.prototype.getValueChangedCallback = function(path){
     var board_instance = this;
     return function(value){
         board_instance.setSoftValue(path, value);
-        SoftTakeoverBoard.prototype.valueChangedCallback.call(board_instance, path, value);
+        if(!board_instance.device_mode)
+            SoftTakeoverBoard.prototype.valueChangedCallback.call(board_instance, path, value);
     };
 };
 

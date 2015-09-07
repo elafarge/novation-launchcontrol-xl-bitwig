@@ -280,7 +280,7 @@ SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
 };
 
 // Assumption that you have to respect in the callback calling this one
-// this.getSoftValue(path) == value !! TODO: remove value parameter
+// this.getSoftValue(path) == value !!
 SoftTakeoverBoard.prototype.valueChangedCallback = function(path, value){
     if(value == "undefined")
         this.setState(path, SoftTakeoverBoard.UNASSIGNED);
