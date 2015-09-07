@@ -19,6 +19,7 @@ load('launchcontrolxl/device_board.js');
 load('launchcontrolxl/macro_board.js');
 load('launchcontrolxl/sends_board.js');
 load('launchcontrolxl/live_board.js');
+load('launchcontrolxl/transport_board.js');
 
 if(host.platformIsLinux())
     host.addDeviceNameBasedDiscoveryPair(["Launch Control XL MIDI 1"], ["Launch Control XL MIDI 1"]);

@@ -171,14 +171,14 @@ SoftTakeoverBoard.prototype.updateLed = function(path){
     var led_index = Board.getLedIndex(path);
 
     this.controller.sendSysEx("f0 00 20 29 02 11 78 " +
-                              intToHex(this.channel) + " " +
+                              intToHex(this.getChannelNumber(path)) + " " +
                               intToHex(led_index) + " " +
                               intToHex(color_code) + " F7");
 };
 
 SoftTakeoverBoard.prototype.updateTakeoverLeds = function(path){
     if(this.getState(path) != SoftTakeoverBoard.TAKING_OVER){
-        this.goodNightNav(["up", "down", "left", "right"]);
+        this.goodNightNav(path, ["up", "down", "left", "right"]);
         return;
     }
 
@@ -186,38 +186,38 @@ SoftTakeoverBoard.prototype.updateTakeoverLeds = function(path){
 
     if(path[0] == "faders"){
         if(diff > 0){
-            this.sendBlinker("down");
-            this.goodNightNav(["up"]);
+            this.sendBlinker(path, "down");
+            this.goodNightNav(path, ["up"]);
         } else {
-            this.sendBlinker("up");
-            this.goodNightNav(["down"]);
+            this.sendBlinker(path, "up");
+            this.goodNightNav(path, ["down"]);
         }
-        this.goodNightNav(["left", "right"]);
+        this.goodNightNav(path, ["left", "right"]);
     } else { // i.e. knobs
         if(diff > 0){
-            this.sendBlinker("left");
-            this.goodNightNav(["right"]);
+            this.sendBlinker(path, "left");
+            this.goodNightNav(path, ["right"]);
         } else {
-            this.sendBlinker("right");
-            this.goodNightNav(["left"]);
+            this.sendBlinker(path, "right");
+            this.goodNightNav(path, ["left"]);
         }
-        this.goodNightNav(["up", "down"]);
+        this.goodNightNav(path, ["up", "down"]);
     }
 };
 
-SoftTakeoverBoard.prototype.sendBlinker = function(nav_direction){
+SoftTakeoverBoard.prototype.sendBlinker = function(path, nav_direction){
     var led_index = Board.getLedIndex(["nav", nav_direction]);
     this.controller.sendSysEx("f0 00 20 29 02 11 78 " +
-                              intToHex(this.channel) + " " +
+                              intToHex(this.getChannelNumber(path)) + " " +
                               intToHex(led_index) + " " +
                               intToHex(59) + " F7");
 };
 
-SoftTakeoverBoard.prototype.goodNightNav = function(nav_directions){
+SoftTakeoverBoard.prototype.goodNightNav = function(path, nav_directions){
     for(var i = 0; i < nav_directions.length; i++){
     var led_index = Board.getLedIndex(["nav", nav_directions[i]]);
     this.controller.sendSysEx("f0 00 20 29 02 11 78 " +
-                              intToHex(this.channel) + " " +
+                              intToHex(this.getChannelNumber(path)) + " " +
                               intToHex(led_index) + " " +
                               intToHex(0) + " F7");
     }
@@ -244,10 +244,6 @@ SoftTakeoverBoard.prototype.isAssigned = function(path){
 // Let's update the appropriate led when a led controller is tweaked
 // What happens to button leds is left to the underlying implementation
 SoftTakeoverBoard.prototype.onMidi = function(status, data1, data2){
-    // Paranoia check, but in case...
-    if(status % 16 != this.channel)
-        throw "Warning: messages from channel " + status % 16 +
-              " also get sent to channel " + this.channel + "!";
     var path = Board.getControlPath(status, data1);
 
     switch(this.getState(path)){
@@ -428,6 +424,17 @@ SoftTakeoverBoard.prototype.setState = function(path, state){
     if(path[0] != "nav" && (old_state != state ||
            ["action", "buttons"].indexOf(path[0]) > -1))
         this.updateLed(path);
+};
+
+SoftTakeoverBoard.prototype.getChannelNumber = function(path){
+    // Let's get the redirection channel
+    this.redirect_to_board = this.controller.getRedirectToBoard();
+
+    // And figure out wether or not we should redirect color indicators
+    if(this.redirect_to_board !== null && !this.redirect_to_board.shouldHandle(path))
+        return this.redirect_to_board.channel;
+
+    return this.channel;
 };
 
 /**

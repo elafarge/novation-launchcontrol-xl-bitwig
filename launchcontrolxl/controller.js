@@ -29,9 +29,10 @@ Controller = function(bw_host){
     // have to create it here once and for all for the 8 user channels
     this.user_control_count = Board.CONTROL_COUNT*8 + 2*LiveBoard.USER_CONTROL_COUNT;
     this.bitwig_user_controls = this.host.createUserControls(this.user_control_count);
-    this.track_bank = this.host.createMainTrackBank(8, 2, 0);
+    this.track_bank = this.host.createTrackBank(8, 2, 0);
     this.application = host.createApplication();
     this.cursor_device = host.createCursorDevice();
+    this.transport = host.createTransport();
 
     var channel_offset = 0;
     for(var i=0; i<8; i++){
@@ -41,14 +42,17 @@ Controller = function(bw_host){
 
     this.boards.push(new MacroBoard(this, 8));
     this.boards.push(new SendsBoard(this, 9));
+
     this.boards.push(new LiveBoard(this, 10, channel_offset));
     channel_offset += LiveBoard.USER_CONTROL_COUNT;
     this.boards.push(new LiveBoard(this, 11, channel_offset));
     channel_offset += LiveBoard.USER_CONTROL_COUNT;
 
-    // Select the first template to match with the above
-    this.enableBoard(11);
-    this.sendSysEx("F0 00 20 29 02 11 77 0b F7");
+    // The transport board needs to be matched to a board that has been enabled
+    // at least once because the led initialisation takes place during that process
+    this.boards.push(new TransportBoard(this, 12, this.boards[8]));
+
+    this.sendSysEx("F0 00 20 29 02 11 77 08 F7");
 };
 
 Controller.prototype.onMidi = function(status, data1, data2){
@@ -99,8 +103,13 @@ Controller.prototype.enableBoard = function(i){
     if(this.current_board_number >= 0)
         this.currentBoard().disable();
 
-    this.boards[i].enable();
-    this.current_board_number = i;
+    if(i == 12){
+        this.boards[i].enable();
+        this.current_board_number = i;
+    } else {
+        this.current_board_number = i;
+        this.boards[i].enable();
+    }
 };
 
 Controller.prototype.currentBoard = function(){
@@ -108,4 +117,11 @@ Controller.prototype.currentBoard = function(){
         return null;
 
     return this.boards[this.current_board_number];
+};
+
+Controller.prototype.getRedirectToBoard = function(){
+    if(this.current_board_number === 12)
+        return this.currentBoard();
+
+    return null;
 };

@@ -133,8 +133,4 @@ Board.prototype.enable = function(){};
 
 Board.prototype.disable = function(){};
 
-Board.prototype.is_active = function(){
-    return this.channel == this.controller.current_board_number;
-};
-
 Board.prototype.onMidi = function(status, data1, data2){};

@@ -208,8 +208,8 @@ MixerBoard.prototype.onMidi = function(status, data1, data2){
 };
 
 MixerBoard.prototype.enable = function(){
-    SoftTakeoverBoard.prototype.enable.call(this);
     this.device_mode = false;
+    SoftTakeoverBoard.prototype.enable.call(this);
     this.showSelectedMode();
     this.enableAssignmentVisualFeedback();
 };
