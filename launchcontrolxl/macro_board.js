@@ -40,8 +40,9 @@ MacroBoard = function(controller, channel){
                         var row = 2 - l + board.macro_offset;
                         if(0 <= row && row < 3){
                             board.setSoftValue(["knobs", row, k], value);
-                            SoftTakeoverBoard.prototype.valueChangedCallback.call(
-                                board, ["knobs", row, k], value);
+                            if(!board.device_mode)
+                                SoftTakeoverBoard.prototype.valueChangedCallback.call(
+                                    board, ["knobs", row, k], value);
                         }
                     }));
         }

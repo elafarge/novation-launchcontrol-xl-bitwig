@@ -30,8 +30,9 @@ SendsBoard = function(controller, channel){
             track.getSend(j).addValueObserver(128, makeDoubleIndexedFunction(i, j,
                 function(k, l, value){
                     board.setSoftValue(["knobs", 1-l, k], value);
-                    SoftTakeoverBoard.prototype.valueChangedCallback.call(
-                        board, ["knobs", 1-l, k], value);
+                    if(!board.device_mode)
+                        SoftTakeoverBoard.prototype.valueChangedCallback.call(
+                            board, ["knobs", 1-l, k], value);
                 }));
         }
     }
