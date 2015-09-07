@@ -33,6 +33,7 @@ Controller = function(bw_host){
     this.application = host.createApplication();
     this.cursor_device = host.createCursorDevice();
     this.transport = host.createTransport();
+    this.arranger = host.createArranger();
 
     var channel_offset = 0;
     for(var i=0; i<8; i++){
